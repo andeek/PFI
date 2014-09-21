@@ -1,0 +1,43 @@
+Column,Var_Type
+Crop,Crop
+Yield Per Acre. Bu./#,Income
+"Price, Bu./#",Income
+Crop Income,Income
+Straw Income,Income
+Pasture/Stubble,Income
+Residue Income,Income
+Misc. Expense Per Acre,Expense
+Crop Ins.,Expense
+Interest,Expense
+Land Change,Expense
+Cover Crop,Expense
+Chop Stks.C.c.,Expense
+Apply NH4,Expense
+Fall Tillage,Expense
+Spring Tillage,Expense
+Maunure Charge,Expense
+Purch. Pert.,Expense
+Herbicides,Expense
+Seed,Expense
+Planting,Expense
+Rotary Hoe,Expense
+Spray/Walk,Expense
+Cultivation,Expense
+Windrow Oats,Expense
+Straw Costs,Expense
+Stubble Costs,Expense
+Mow/Windrow,Expense
+Rake,Expense
+Bale Hay,Expense
+Stack Residues,Expense
+Mov & Stor bales,Expense
+Grain Harvest,Expense
+Grain Handling,Expense
+Shell/Grind,Expense
+Storage,Expense
+Hedge/P.L.,Expense
+Drying Cost,Expense
+Corn RSL,Expense
+Cost/bu. Or pound,Cost
+Labor Return,Labor
+Labor&M.R. $/A,Labor
