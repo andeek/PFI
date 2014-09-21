@@ -12,3 +12,6 @@
 .Rproj.user
 
 *.Rproj
+
+# tmp files to create empty directory structure
+tmp.R

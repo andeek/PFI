@@ -36,4 +36,4 @@ dat$Variable <- gsub(",", "", gsub(" ", "_", gsub("^\\s+|\\s+$", "", gsub("\\$",
 dat.m <- melt(dat, id.vars=c(".id", "Variable","Var_Type"))
 names(dat.m) <- c("year", "item", "item_type", "field_id", "value")
 
-write.csv(dat, "data/PFI_clean.csv", row.names=FALSE)
+write.csv(dat.m, "data/PFI_clean.csv", row.names=FALSE)
