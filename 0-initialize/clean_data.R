@@ -33,7 +33,15 @@ dat <- merge(dat, var_map[,c("Column", "Var_Type")], by.x="Variable", by.y="Colu
 dat$Variable <- gsub(",", "", gsub(" ", "_", gsub("^\\s+|\\s+$", "", gsub("\\$", "dollar", gsub("#", "pound", gsub("\\.", "", gsub("/", " per ", gsub("&", "and", dat$Variable))))))))
 
 # Reshape to a usable form
-dat.m <- melt(dat, id.vars=c(".id", "Variable","Var_Type"))
-names(dat.m) <- c("year", "item", "item_type", "field_id", "value")
+crop.field <- melt(subset(dat, Variable == "Crop"), id.vars=c(".id", "Variable", "Var_Type"))
+dat.m <- melt(subset(dat, Variable != "Crop"), id.vars=c(".id", "Variable","Var_Type"))
+tmp <- merge(dat.m, crop.field, by=c('.id', 'variable'))
+dat.m <- tmp[,c('.id', 'variable', 'value.y', 'Variable.x', 'Var_Type.x', 'value.x')]
+names(dat.m) <- c("year", "field_id", "crop", "item", "item_type", "value")
+
+# Data types
+dat.m$crop <- as.factor(dat.m$crop)
+dat.m$year <- as.numeric(dat.m$year)
+dat.m$value <- as.numeric(dat.m$value)
 
 write.csv(dat.m, "data/PFI_clean.csv", row.names=FALSE)
