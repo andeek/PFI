@@ -1,43 +1,43 @@
-Column,Var_Type
-Crop,Crop
-Yield Per Acre. Bu./#,Income
-"Price, Bu./#",Income
-Crop Income,Income
-Straw Income,Income
-Pasture/Stubble,Income
-Residue Income,Income
-Misc. Expense Per Acre,Expense
-Crop Ins.,Expense
-Interest,Expense
-Land Change,Expense
-Cover Crop,Expense
-Chop Stks.C.c.,Expense
-Apply NH4,Expense
-Fall Tillage,Expense
-Spring Tillage,Expense
-Maunure Charge,Expense
-Purch. Pert.,Expense
-Herbicides,Expense
-Seed,Expense
-Planting,Expense
-Rotary Hoe,Expense
-Spray/Walk,Expense
-Cultivation,Expense
-Windrow Oats,Expense
-Straw Costs,Expense
-Stubble Costs,Expense
-Mow/Windrow,Expense
-Rake,Expense
-Bale Hay,Expense
-Stack Residues,Expense
-Mov & Stor bales,Expense
-Grain Harvest,Expense
-Grain Handling,Expense
-Shell/Grind,Expense
-Storage,Expense
-Hedge/P.L.,Expense
-Drying Cost,Expense
-Corn RSL,Expense
-Cost/bu. Or pound,Cost
-Labor Return,Labor
-Labor&M.R. $/A,Labor
+Column,Var_Name,Var_Type,Desc,Notes
+Apply NH4,Apply_NH4,Expense,Expense of applying NH4.,Taken from ISU's estimated production cost.
+Bale Hay,Bale_Hay,Expense,Cost of baling hay.,
+Chop Stks.C.c.,Chop_StksCc,Expense,,
+Corn RSL,Corn_RSL,Expense,,
+Cost/bu. Or pound,Cost_per_bu_Or_pound,Cost,,
+Cover Crop,Cover_Crop,Expense,Cost of applying cover crop.,Includes seed and machinery costs.
+Crop,Crop,Crop,"Crop identifier. Options include corn, soy bean, oats/legume, and hay.",
+Crop Income,Crop_Income,Income,Revenue from crops.,Net revenue? Or total revenue?
+Crop Ins.,Crop_Ins,Expense,Cost of purchasing crop insurance.,
+Cultivation,Cultivation,Expense,Expense of cultivating a field.,
+Drying Cost,Drying_Cost,Expense,Cost of drying corn.,
+Fall Tillage,Fall_Tillage,Expense,Cost of applying fall tillage.,
+Grain Handling,Grain_Handling,Expense,Grain handling fee.,
+Grain Harvest,Grain_Harvest,Expense,Cost of harvesting grain.,
+Hedge/P.L.,Hedge_per_PL,Expense,,
+Herbicides,Herbicides,Expense,Herbicide costs.,Taken from ISU's estimated production cost.
+Interest,Interest,Expense,,
+Labor Return,Labor_Return,Labor,Labor return.,Labor cost/return computed at $7-$8/hour times field time (25% added to field time for travel and repairs.)
+Labor&M.R. $/A,LaborandMR_dollar_per_A,Labor,Labor and management return per acre.,Labor and management return/acre for all crop refers to any profit after all out of pocket costs are paid.
+Land Change,Land_Change,Expense,,
+Maunure Charge,Maunure_Charge,Expense,Cost of applying manure to fields.,
+Misc. Expense Per Acre,Misc_Expense_Per_Acre,Expense,Miscellaneous expenses per acre.,Taken from Iowa Farm business records.
+Mov & Stor bales,Mov_and_Stor_bales,Expense,Cost of moving and storing hay bales.,
+Mow/Windrow,Mow_per_Windrow,Expense,Cost of mowing/windrowing.,
+Pasture/Stubble,Pasture_per_Stubble,Income,,
+Planting,Planting,Expense,Cost of planting fields.,
+"Price, Bu./#",Price_Bu_per_pound,Income,Price per bushel or pound of individual crops.,
+Purch. Pert.,Purch_Pert,Expense,,
+Rake,Rake,Expense,Cost of raking (hay or oats).,
+Residue Income,Residue_Income,Income,Income from selling crop residue.,
+Rotary Hoe,Rotary_Hoe,Expense,Cost of using rotary hoe.,
+Seed,Seed,Expense,Seed costs.,Computed using ISU's price/1000 seeds.
+Shell/Grind,Shell_per_Grind,Expense,,
+Spray/Walk,Spray_per_Walk,Expense,,
+Spring Tillage,Spring_Tillage,Expense,Cost of applying spring tillage.,
+Stack Residues,Stack_Residues,Expense,Cost of stacking crop residues.,
+Storage,Storage,Expense,Cost of storing harvest.,"Traditional crops stored for 3 months, sold at first of the year. Thompson crops stored on the farm and fed to livestock."
+Straw Costs,Straw_Costs,Expense,Cost of straw.,
+Straw Income,Straw_Income,Income,Income from selling straw.,
+Stubble Costs,Stubble_Costs,Expense,Cost of stubble.,
+Windrow Oats,Windrow_Oats,Expense,Cost of windrowing oats.,
+Yield Per Acre. Bu./#,Yield_Per_Acre_Bu_per_pound,Income,Crop yields per Acre in bushels or pounds.,Based on actual yield from Thompson farm or conventional Boone county average corn and soy bean yields.

@@ -27,7 +27,7 @@ dat <- ldply(sheet_list_clean, rbind)
 # There is information stored in "Labor Return" Column names, although not sure what it means
 dat$Variable[grep("Labor Return", dat$Variable)] <- "Labor Return"
 var_map <- read.csv("data/var_map.csv", header=TRUE)
-dat <- merge(dat, var_map, by.x="Variable", by.y="Column", all.x=TRUE)
+dat <- merge(dat, var_map[,c("Column", "Var_Type")], by.x="Variable", by.y="Column", all.x=TRUE)
 
 # Turn into valid variable names
 dat$Variable <- gsub(",", "", gsub(" ", "_", gsub("^\\s+|\\s+$", "", gsub("\\$", "dollar", gsub("#", "pound", gsub("\\.", "", gsub("/", " per ", gsub("&", "and", dat$Variable))))))))
