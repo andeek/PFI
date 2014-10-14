@@ -32,7 +32,7 @@ Storage,Storage,Expense,Cost of storing harvest.,"Traditional crops stored for 3
 Straw Costs,Straw_Costs,Expense,Cost of straw.,
 Stubble Costs,Stubble_Costs,Expense,Cost of stubble.,
 Windrow Oats,Windrow_Oats,Expense,Cost of windrowing oats.,
-Crop Income,Crop_Income,Revenue,Revenue from crops.,Net revenue? Or total revenue?
+Crop Income,Crop_Income,Derived,Revenue from crops.,Net revenue? Or total revenue?  Page 7-6 makes this seem like total revenue b/c they talk about then factoring in labor savings
 Pasture/Stubble,Pasture_per_Stubble,Revenue,Revenue from pasture/stubble,
 "Price, Bu./#",Price_Bu_per_pound,Unit Price,Price per bushel or pound of individual crops.,
 Residue Income,Residue_Income,Revenue,Revenue from selling crop residue.,
