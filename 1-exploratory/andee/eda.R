@@ -50,5 +50,17 @@ ggplot(data=return_compare_filter) +
 
 ## It seems like there is a stark difference in the rate of return post 2000. 
 ## Explore what that difference might be
-dat$post_2000 <- year >= 2000
+dat$post_2000 <- dat$year >= 2000
+dat$farmer <- with(dat, substring(field_id, 1, nchar(as.character(field_id)) - 1))
+
+rev_exp_by_crop <- dat %>% filter(item_type %in% c("Revenue", "Expense")) %>%
+  group_by(farmer, crop, item_type, year, post_2000) %>%
+  summarise(avg = mean(value))
+
+ggplot(rev_exp_by_crop) +
+  geom_bar(aes(as.character(year), avg, fill=crop), position="fill", stat="identity") +
+  facet_grid(farmer~item_type)
+ggplot(rev_exp_by_crop) +
+  geom_bar(aes(as.character(year), avg, fill=crop), position="stack", stat="identity") +
+  facet_grid(farmer~item_type)
 
