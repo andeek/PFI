@@ -17,7 +17,7 @@ names(sheet_list) <- sheet_names[-1]
 # Remove average, total rows and combine sheets
 sheet_list_clean <- llply(sheet_list, function(x){
   y <- x[-c(1, grep("Avg.", sheet_list[[1]][,1]), grep("Adv.", sheet_list[[1]][,1]),  grep("Total", sheet_list[[1]][,1])),]
-  names(y) <- c("Variable", paste0("Thompson", 1:5), paste0("Boone", 1:2))
+  names(y) <- c("Variable", paste0("Thompson", x[1,2:6]), paste0("Boone", 1:2))
   y
 })
 
