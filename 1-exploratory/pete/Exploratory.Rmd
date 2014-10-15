@@ -1,0 +1,79 @@
+---
+title: "PFI Exploratory"
+author: "Evan “Pete” Walsh"
+date: "October 15, 2014"
+output: html_document
+---
+
+>Load data and libraries.
+
+```{r message=FALSE}
+pfi <- read.csv("/Users/marianwaitwalsh/Classes and Work/PFI/PFI_clean.csv")
+library(dplyr)
+library(ggplot2)
+```
+
+>Variables are grouped into five different categories, denoted by ```item_type```. These categories are ```Cost```, ```Crop```, ```Expense```, ```Income```, and ```Labor```.
+
+```{r}
+unique(pfi$item_type)
+```
+
+
+>Create a numeric version of ```value```.
+
+```{r warning=FALSE}
+pfi$value2 <- as.numeric(as.character(pfi$value))
+```
+
+>We will now examine the category ```Income```.
+
+```{r}
+inc <- pfi %>%
+  filter(item_type=="Income") %>%
+  group_by(field_id, item) %>%
+  summarize(mean = mean(value2),
+            s = sd(value2),
+            n = length(value2))
+inc
+inc2 <- pfi %>%
+  select(field_id, year, item, value2) %>%
+  filter(item=="Crop_Income") %>%
+  group_by(field_id) %>%
+  arrange(year)
+qplot(year, value2, data=inc2, facets=~field_id) + ylab("Crop Income") +
+  stat_smooth(method=loess)
+inc3 <- pfi %>%
+  select(field_id, year, item, value2) %>%
+  filter(item=="Yield_Per_Acre_Bu_per_pound", field_id != "Thompson5") %>%
+  group_by(field_id) %>%
+  arrange(year)
+inc3
+qplot(year, value2, data=inc3, facets=~field_id) + 
+  ylab("Yield / acre bu / #") + stat_smooth(method=loess)
+```
+
+>Questions at this point:
+<ol><li>Why is the Yield_Per_Acre_Bu / # so high for Thompson5?</li>
+<li>Which variable should we be most interested in?</li></ol>
+
+>Here is a summary of the only ```Cost``` variable, which is ```Cost_per_bu_oOr_pound```.
+
+```{r}
+cost <- pfi %>%
+  filter(item_type=="Cost") %>%
+  group_by(field_id, item) %>%
+  summarize(mean = mean(value2),
+            s = sd(value2),
+            n = length(value2))
+cost
+cost2 <- pfi %>%
+  select(field_id, year, item, value2) %>%
+  filter(item=="Cost_per_bu_Or_pound", field_id != "Thompson5") %>%
+  group_by(field_id) %>%
+  arrange(year)
+qplot(year, value2, data=cost2, facets=~field_id) + ylab("Cost / bu or #") +
+  stat_smooth(method=loess)
+```
+
+
