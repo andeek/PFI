@@ -26,6 +26,30 @@ unique(pfi$item_type)
 pfi$value2 <- as.numeric(as.character(pfi$value))
 ```
 
+>Here is a summary of the ```crop``` type produced by each field.
+
+```{r}
+crop <- pfi %>%
+  filter(item_type=="Crop") %>%
+  group_by(field_id) %>%
+  summarize(crop_types = unique(value))
+crop
+```
+
+>Let's make a new column in ```pfi``` that just has the crop type by field.
+
+```{r}
+pfi$crop <- NA
+pfi$crop[which(pfi$field_id == "Boone1")] <- "Corn"
+pfi$crop[which(pfi$field_id == "Boone2")] <- "SB"
+pfi$crop[which(pfi$field_id == "Thompson1")] <- "Corn"
+pfi$crop[which(pfi$field_id == "Thompson2")] <- "SB"
+pfi$crop[which(pfi$field_id == "Thompson3")] <- "Corn"
+pfi$crop[which(pfi$field_id == "Thompson4")] <- "Oats"
+pfi$crop[which(pfi$field_id == "Thompson5")] <- "Hay"
+pfi$crop <- as.factor(pfi$crop)
+```
+
 >We will now examine the category ```Income```.
 
 ```{r}
@@ -37,19 +61,18 @@ inc <- pfi %>%
             n = length(value2))
 inc
 inc2 <- pfi %>%
-  select(field_id, year, item, value2) %>%
+  select(field_id, year, item, crop, value2) %>%
   filter(item=="Crop_Income") %>%
   group_by(field_id) %>%
   arrange(year)
-qplot(year, value2, data=inc2, facets=~field_id) + ylab("Crop Income") +
-  stat_smooth(method=loess)
+qplot(year, value2, data=inc2, colour=crop, facets=~field_id) +
+  ylab("Crop Income") + stat_smooth(method=loess)
 inc3 <- pfi %>%
-  select(field_id, year, item, value2) %>%
+  select(field_id, year, item, crop, value2) %>%
   filter(item=="Yield_Per_Acre_Bu_per_pound", field_id != "Thompson5") %>%
   group_by(field_id) %>%
   arrange(year)
-inc3
-qplot(year, value2, data=inc3, facets=~field_id) + 
+qplot(year, value2, data=inc3, colour=crop, facets=~field_id) + 
   ylab("Yield / acre bu / #") + stat_smooth(method=loess)
 ```
 
@@ -57,7 +80,7 @@ qplot(year, value2, data=inc3, facets=~field_id) +
 <ol><li>Why is the Yield_Per_Acre_Bu / # so high for Thompson5?</li>
 <li>Which variable should we be most interested in?</li></ol>
 
->Here is a summary of the only ```Cost``` variable, which is ```Cost_per_bu_oOr_pound```.
+>Here is a summary of the only ```Cost``` variable, which is ```Cost_per_bu_Or_pound```.
 
 ```{r}
 cost <- pfi %>%
@@ -68,12 +91,36 @@ cost <- pfi %>%
             n = length(value2))
 cost
 cost2 <- pfi %>%
-  select(field_id, year, item, value2) %>%
+  select(field_id, year, item, crop, value2) %>%
   filter(item=="Cost_per_bu_Or_pound", field_id != "Thompson5") %>%
   group_by(field_id) %>%
   arrange(year)
-qplot(year, value2, data=cost2, facets=~field_id) + ylab("Cost / bu or #") +
-  stat_smooth(method=loess)
+qplot(year, value2, data=cost2, colour = crop, facets=~field_id) + 
+  ylab("Cost / bu or #") + stat_smooth(method=loess)
 ```
 
+>Let's look at the ```labor``` category now.
+
+```{r}
+labor <- pfi %>%
+  filter(item_type=="Labor") %>%
+  group_by(field_id, item) %>%
+  summarize(mean = mean(value2),
+            s = sd(value2),
+            n = length(value2))
+labor2 <- pfi %>%
+  select(field_id, year, item, crop, value2) %>%
+  filter(item == "Labor_Return") %>%
+  group_by(field_id) %>%
+  arrange(year)
+labor3 <- pfi %>%
+  select(field_id, year, item, crop, value2) %>%
+  filter(item == "LaborandMR_dollar_per_A") %>%
+  group_by(field_id) %>%
+  arrange(year)
+qplot(year, value2, data=labor2, colour=crop, facets=~field_id) + 
+  ylab("Labor return")
+qplot(year, value2, data=labor3, colour=crop, facets=~field_id) + 
+  ylab("Labor MR $ / Acre") + stat_smooth(method=loess)
+```
 
