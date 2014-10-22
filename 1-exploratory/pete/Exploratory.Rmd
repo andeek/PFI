@@ -30,15 +30,15 @@ derived
 # Total expenses divided by yield (Cost per bushel or pound).
 derived2 <- subset(derived, item=="Cost_per_bu_Or_pound")
 qplot(year, value, data=derived2, facets=~field_id, colour=crop) + 
-  ylab("Cost / bu or #")
+  ylab("Cost / bu or #") + geom_smooth(method=lm, se=F)
 # Net income excluding the cost of labor.
 derived3 <- subset(derived, item=="Labor_Return")
 qplot(year, value, data=derived3, facets=~field_id, colour=crop) +
-  ylab("Labor return")
+  ylab("Labor return") + geom_smooth(method=lm, se=F)
 # Net income excluding the cost of labor and management.
 derived4 <- subset(derived, item=="LaborandMR_dollar_per_A")
 qplot(year, value, data=derived4, facets=~field_id, colour=crop) + 
-  ylab("Labor & MR $ / acre")
+  ylab("Labor & MR $ / acre") + geom_smooth(method=lm, se=F)
 ```
 
 >Crop yields per acre in bushels or pounds.
@@ -53,5 +53,88 @@ mean(yields2$Corn, na.rm=T)
 mean(yields2$Hay, na.rm=T)
 mean(yields2$Oats, na.rm=T)
 mean(yields2$SB, na.rm=T)
+qplot(crop, value, data=subset(yields, crop != "Hay"), facets=~field_id) +
+  ylab("Yield / acre")
+qplot(year, value, data=subset(yields, crop != "Hay"), facets=~field_id,
+      color = crop) + geom_smooth(method=lm, se=FALSE) + ylab("Yield / acre")
+qplot(crop, value, data=subset(yields, crop == "Hay"), facets=~field_id) +
+  ylab("Yield / acre")
+qplot(year, value, data=subset(yields, crop == "Hay"), facets=~field_id,
+      color = crop) + ylab("Yield / acre")
 ```
 
+>```Revenue```
+
+```{r warning=FALSE}
+revenue <- pfi %>%
+  filter(item_type == "Revenue") %>%
+  group_by(field_id, year)
+revenue2 <- dcast(revenue, field_id+year~item, value.var="value")
+mean(revenue2$Crop_Income, na.rm=T)
+mean(revenue2$Pasture_per_Stubble, na.rm=T)
+mean(revenue2$Residue_Income, na.rm=T)
+mean(revenue2$Straw_Income, na.rm=T)
+qplot(year, value, data=subset(revenue, item=="Crop_Income"),
+      facets=~field_id, color=crop) + geom_smooth(method=lm, se=F) + 
+  ylab("Crop Income")
+revenue3 <- subset(revenue, item=="Crop_Income" & !is.na(crop))
+qplot(year, value, data=subset(revenue, item=="Crop_Income" & !is.na(crop)),
+      facets=~crop, color=field_id) + ylab("Crop Income")
+revenue %>% filter(!is.na(crop)) %>% group_by(crop) %>% 
+  summarize(rev = mean(value, na.rm=T))
+```
+
+>Let's compare ```corn``` and ```sb``` ```Revenue``` between the two farmers.
+
+```{r warning=FALSE}
+revBoone <- dcast(subset(revenue3, field_id %in% c("Boone1", "Boone2")),
+                  year~crop, value.var = "value")
+revThomp <- dcast(subset(revenue3, !(field_id %in% c("Boone1", "Boone2"))),
+                  year~crop, fun = mean, value.var = "value")
+revThomp <- revThomp[,c(1,2,5)]
+revThomp$farmer <- "Thompson"
+revBoone$farmer <- "Boone"
+revenue4 <- rbind(revThomp, revBoone)
+qplot(year, Corn, data=revenue4, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Corn revenue")
+qplot(year, SB, data=revenue4, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Soy bean revenue")
+```
+
+>Here's a comparison of ```Labor_Return``` for ```corn``` and ```SB``` for the two farmers.
+
+```{r}
+derivedBoone1 <- dcast(subset(derived3, 
+                              field_id %in% c("Boone1", "Boone2")),
+                  year~crop, value.var = "value")
+derivedThomp1 <- dcast(subset(derived3,
+                              !(field_id %in% c("Boone1", "Boone2"))),
+                  year~crop, fun = mean, value.var = "value")
+derivedThomp1 <- derivedThomp1[,c(1,2,5)]
+derivedThomp1$farmer <- "Thompson"
+derivedBoone1$farmer <- "Boone"
+derived5 <- rbind(derivedThomp1, derivedBoone1)
+qplot(year, Corn, data=derived5, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Corn labor return")
+qplot(year, SB, data=derived5, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Soy bean labor return")
+```
+
+>Here's a comparison of ```Labor_Return``` for ```corn``` and ```SB``` for the two farmers.
+
+```{r}
+derivedBoone2 <- dcast(subset(derived4, 
+                              field_id %in% c("Boone1", "Boone2")),
+                  year~crop, value.var = "value")
+derivedThomp2 <- dcast(subset(derived4,
+                              !(field_id %in% c("Boone1", "Boone2"))),
+                  year~crop, fun = mean, value.var = "value")
+derivedThomp2 <- derivedThomp2[,c(1,2,5)]
+derivedThomp2$farmer <- "Thompson"
+derivedBoone2$farmer <- "Boone"
+derived6 <- rbind(derivedThomp2, derivedBoone2)
+qplot(year, Corn, data=derived6, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Corn labor and MR $ / acre")
+qplot(year, SB, data=derived6, color=farmer, shape=farmer, size=I(3)) + 
+  ylab("Soy bean labor and MR $ / acre")
+```
