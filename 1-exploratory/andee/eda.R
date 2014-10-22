@@ -11,6 +11,10 @@ library(reshape2)
 dat_2000 <- subset(dat, year == 2000)
 dat_2000.sum <- ddply(dat_2000, .(field_id, crop, item_type), summarise, avg=mean(value), total=sum(value))
 
+
+##get rd of cd
+dat$field_id <- gsub("CD", "", dat$field_id)
+
 qplot(item_type, total, data=dat_2000.sum[-c(grep("Unit", dat_2000.sum$item_type), grep("Derived", dat_2000.sum$item_type)),], colour=substring(field_id, 1, nchar(as.character(field_id)) - 1)) + 
   facet_wrap(~crop) +
   scale_colour_discrete("Crop System")
@@ -18,8 +22,9 @@ qplot(item_type, total, data=dat_2000.sum[-c(grep("Unit", dat_2000.sum$item_type
 rev_exp_compare <- ddply(subset(dat, item_type %in% c("Revenue", "Expense")), 
       .(year, substring(field_id, 1, nchar(as.character(field_id)) - 1), item_type),
       summarise,
-      avg = mean(value))
+      avg = mean(value, na.rm=TRUE))
 names(rev_exp_compare)[2] <- "farmer"
+
 
 ggplot(data=rev_exp_compare) +
   geom_line(aes(year, avg, group=farmer, colour=farmer)) + 
@@ -28,7 +33,7 @@ ggplot(data=rev_exp_compare) +
 return_compare <- ddply(subset(dat, item %in% c("LaborandMR_dollar_per_A", "Labor_Return")),
                         .(year, substring(field_id, 1, nchar(as.character(field_id)) - 1), item),
                         summarise,
-                        avg=mean(value))
+                        avg=mean(value, na.rm=TRUE))
 names(return_compare)[2] <- "farmer"
                         
 ggplot(data=return_compare) +
@@ -57,9 +62,6 @@ rev_exp_by_crop <- dat %>% filter(item_type %in% c("Revenue", "Expense")) %>%
   group_by(farmer, crop, item_type, year, post_2000) %>%
   summarise(avg = mean(value))
 
-ggplot(rev_exp_by_crop) +
-  geom_bar(aes(as.character(year), avg, fill=crop), position="fill", stat="identity") +
-  facet_grid(farmer~item_type)
 ggplot(rev_exp_by_crop) +
   geom_bar(aes(as.character(year), avg, fill=crop), position="stack", stat="identity") +
   facet_grid(farmer~item_type)

@@ -17,7 +17,7 @@ names(sheet_list) <- sheet_names[-1]
 # Remove average, total rows and combine sheets
 sheet_list_clean <- llply(sheet_list, function(x){
   y <- x[-c(1, grep("Avg.", sheet_list[[1]][,1]), grep("Adv.", sheet_list[[1]][,1]),  grep("Total", sheet_list[[1]][,1])),]
-  names(y) <- c("Variable", paste0("Thompson", x[1,2:6]), paste0("Boone", 1:2))
+  names(y) <- c("Variable", paste0("Thompson_", x[1,2:6]), paste0("Boone_", 1:2))
   y
 })
 
@@ -43,5 +43,9 @@ names(dat.m) <- c("year", "field_id", "crop", "item", "item_type", "value")
 dat.m$crop <- as.factor(dat.m$crop)
 dat.m$year <- as.numeric(dat.m$year)
 dat.m$value <- as.numeric(dat.m$value)
+
+# Split farmer and field_id
+dat.m <- cbind(dat.m[,-grep("field_id", names(dat.m))], colsplit(dat.m$field_id, "_", c("farmer", "field_id")))
+dat.m <- dat.m[,c("year", "farmer", "field_id", "crop", "item", "item_type", "value")]
 
 write.csv(dat.m, "data/PFI_clean.csv", row.names=FALSE)
