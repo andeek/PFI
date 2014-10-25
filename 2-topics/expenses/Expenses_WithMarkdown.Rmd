@@ -1,0 +1,45 @@
+---
+title: "Expenses"
+author: "Colin"
+date: "Saturday, October 25, 2014"
+output: html_document
+---
+
+##### Libraries #####
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+
+##### Read in Data #####
+pfi <- read.csv("C:/Users/Colin LB/Documents/GitHub/PFI/data/PFI_clean.csv")
+
+##### Exploring #####
+```{r}
+z2<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Expense") %>%
+  filter(crop %in% c("Corn")) %>%
+  group_by(farmer, year, crop, field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year, crop,item) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=total, colour=item)) +
+  facet_wrap(~farmer) +
+  ggtitle('Expenses over time for Corn')
+```
+Let's just pull out the costs that seem "large"
+
+```{r}
+q<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Expense") %>%
+  filter(crop %in% c("Corn")) %>%
+  filter(item %in% c("Land_Change","Purch_Pert","Seed","Herbicides")) %>%
+  group_by(farmer, year, crop, field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer,year,item) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=total,color=item)) +
+  facet_wrap(~farmer) +
+  ggtitle('Expenses over time for Corn')
+```
+
+
