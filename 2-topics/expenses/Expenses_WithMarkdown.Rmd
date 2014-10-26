@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ##### Libraries #####
+```{r,warning=FALSE,message=FALSE}
 library(ggplot2)
 library(dplyr)
 library(reshape2)
@@ -14,8 +15,7 @@ library(reshape2)
 pfi <- read.csv("C:/Users/Colin LB/Documents/GitHub/PFI/data/PFI_clean.csv")
 
 ##### Exploring #####
-```{r}
-z2<-pfi[complete.cases(pfi),] %>% 
+pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
   group_by(farmer, year, crop, field_id,item) %>%
@@ -26,10 +26,11 @@ z2<-pfi[complete.cases(pfi),] %>%
   facet_wrap(~farmer) +
   ggtitle('Expenses over time for Corn')
 ```
+
 Let's just pull out the costs that seem "large"
 
 ```{r}
-q<-pfi[complete.cases(pfi),] %>% 
+pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
   filter(item %in% c("Land_Change","Purch_Pert","Seed","Herbicides")) %>%
@@ -41,5 +42,20 @@ q<-pfi[complete.cases(pfi),] %>%
   facet_wrap(~farmer) +
   ggtitle('Expenses over time for Corn')
 ```
+
+Let's look just at SB
+```{r}
+pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Expense") %>%
+  filter(crop %in% c("SB")) %>%
+  group_by(farmer, year, crop, field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year, crop,item) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=total, colour=item)) +
+  facet_wrap(~farmer) +
+  ggtitle('Expenses over time for SB')
+```
+
 
 
