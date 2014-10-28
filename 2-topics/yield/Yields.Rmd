@@ -9,7 +9,7 @@ output: pdf_document
 
 ```{r message=FALSE}
 pfi <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/PFI_clean.csv")
-weather <- read.csv("/Users/marianwaitwalsh/Classes and Work/PFI/IA_annual_rainfall.csv")
+weather <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/2-topics/yield/IA_annual_rainfall_raw.csv")
 library(dplyr)
 library(tidyr)
 library(reshape2)
@@ -33,7 +33,7 @@ wBoone <- weather %>%
 
 wBoone$year <- sapply(wBoone$year, FUN = function(x) extract_numeric(x))
 
-inner_join(yields, wBoone, by = "year")
+yields2 <- inner_join(yields, wBoone, by = "year")
 ```
 
 ```{r}
