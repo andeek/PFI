@@ -5,7 +5,9 @@ date: "October 27, 2014"
 output: pdf_document
 ---
 
->Yields for ```SB``` and ```Corn``` in acre buschel per pound.
+\subsection*{Yields for SB and Corn in acre buschel per pound.}
+
+Read data and load libraries.
 
 ```{r message=FALSE}
 pfi <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/PFI_clean.csv")
@@ -16,12 +18,16 @@ library(reshape2)
 library(ggplot2)
 ```
 
+Subset the ```PFI``` data.
+
 ```{r}
 yields <- pfi %>%
   filter(item_type == "Unit Quantity", crop %in% c("Corn","SB")) %>%
   select(-c(item, item_type)) %>%
   group_by(field_id, year)
 ```
+
+Clean the weather data and join with ```yields```.
 
 ```{r warning=FALSE}
 wBoone <- weather %>%
@@ -32,11 +38,13 @@ wBoone <- weather %>%
   select(year, MAXT, MINT, PREC)
 
 wBoone$year <- sapply(wBoone$year, FUN = function(x) extract_numeric(x))
-
 yields2 <- inner_join(yields, wBoone, by = "year")
 ```
 
 ```{r}
-
+head(yields2)
+qplot(year, value, data=yields2, size=PREC, facets=~crop)
+qplot(year, value, data=yields2, size=MAXT, facets=~crop)
+qplot(year, value, data=yields2, size=MINT, facets=~crop)
 ```
 
