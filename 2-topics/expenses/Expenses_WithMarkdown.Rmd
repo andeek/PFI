@@ -2,16 +2,19 @@
 title: "Expenses"
 author: "Colin"
 date: "Saturday, October 25, 2014"
-output: html_document
+output: pdf_document
 ---
 
 #### Libraries 
+
 ```{r,warning=FALSE,message=FALSE}
 library(ggplot2)
 library(dplyr)
 
 ##### Read in Data #####
-pfi <- read.csv("C:/Users/Colin LB/Documents/GitHub/PFI/data/PFI_clean.csv")
+#pfi <- read.csv("C:/Users/Colin LB/Documents/GitHub/PFI/data/PFI_clean.csv")
+#let's try to work with relative paths so that code works for everyone.
+pfi <- read.csv("../../data/PFI_clean.csv")
 #Let's remove Land_Change since that's assumed the same for both farms.
 ##### Exploring #####
 pfi[complete.cases(pfi),] %>% 
@@ -29,7 +32,7 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for Corn Averaged Over Plots by Item')
 ```
 
-####Let's just pull out the costs that seem "large"
+Let's just pull out the costs that seem "large"
 
 ```{r}
 pfi[complete.cases(pfi),] %>% 
@@ -47,6 +50,7 @@ pfi[complete.cases(pfi),] %>%
 ```
 
 Did we confirm what Purch_Pert is?  Let's look just at SB now.
+
 ```{r}
 pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
@@ -63,7 +67,7 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for SB Averaged Over Plots by Item')
 ```
 
-####Let's look at the "large" expenses for SB
+Let's look at the "large" expenses for SB
 
 ```{r}
 pfi[complete.cases(pfi),] %>% 
@@ -79,10 +83,9 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for SB')
 ```
 
-
 ####Let's try and see all the expenses Thompson records as 0 vs. what Boone pays.
 
-
+```{r}
 q<-pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
@@ -91,7 +94,7 @@ q<-pfi[complete.cases(pfi),] %>%
   group_by(item)
   
 unique(q$item)
-
+```
 
 ```{r}
 boone_extra_expense<-pfi[complete.cases(pfi),] %>% 
@@ -108,7 +111,6 @@ boone_extra_expense<-pfi[complete.cases(pfi),] %>%
 
 boone_extra_expense
 ```
-
 
 ####Hedge Per PL and Herbicide Are Again the big Difference
 

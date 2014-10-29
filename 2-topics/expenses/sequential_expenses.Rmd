@@ -1,0 +1,68 @@
+---
+title: "Sequential Expenses"
+author: "Andee Kaplan"
+date: "10/29/2014"
+output:
+  html_document:
+    highlight: textmate
+    theme: journal
+---
+
+This document will detail the expenses incurred from sequential planting of crops in rotation. Due to the nature of the data we have available, this exploration will be limited to the Thompson dataset only, seeing as the Boone average data does not have rotation of crops.
+
+#### Libraries
+We will use the following packages to conduct this analysis.
+
+```{r, message=FALSE}
+#libraries
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(ggvis)
+library(ggplot2)
+```
+
+The data has been cleaned and includes a data dictionary.
+```{r, results='asis'}
+#pull in data
+dat <- read.csv("../../data/PFI_clean.csv")
+var <- read.csv("../../data/var_map.csv")
+
+kable(var, format="markdown") 
+```
+
+#### Building crop sequences
+We are interested in the sequence of crop rotation and how this affects the expenses associated with growing each crop over time.
+
+```{r}
+seq_dat <- dat %>% 
+  filter(item_type == "Expense") %>%
+  filter(farmer == "Thompson") %>%
+  mutate(year_before = year - 1) %>%
+  left_join(dat[dat$item_type=="Expense",], by=c("farmer" = "farmer", "year_before" = "year", "field_id" = "field_id")) %>%
+  mutate(two_crops = paste(crop.y, crop.x, sep="-")) %>%
+  group_by(year, two_crops, field_id) %>%
+  summarise(total = sum(value.x)) %>%
+  group_by(year, two_crops) %>%
+  summarise(avg_total = mean(total)) %>%
+  data.frame() %>%
+  separate(two_crops, into=c("crop1", "crop2")) %>%
+  filter( crop1 != "NA")
+
+seq_dat %>%
+  ggplot(aes(x=crop1, y=crop2, z=avg_total)) +
+  stat_bin2d() +
+  scale_fill_gradient(low="#e5f5e0", high="#31a354") +
+  ggtitle('Occurrence of sequential crops')
+
+seq_dat %>% 
+  group_by(crop1, crop2) %>%
+  summarise(avg_total = mean(avg_total)) %>%
+  ggplot(aes(x=crop1, y=crop2, z=avg_total)) +
+  stat_summary2d() +
+  scale_fill_gradient(low="#e5f5e0", high="#31a354") +
+  ggtitle('Expenses by sequential crops')
+```
+Corn is by far the most expensive crop, but it's interesting to note that it was most expensive when following hay and next most when following soy beans. We can investigate whether there are any additional expenses involved with this sequence of crops in the data.
+
+
