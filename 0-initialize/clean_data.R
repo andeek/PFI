@@ -14,12 +14,17 @@ sheet_list <- lapply(sheet_names[-1], function(x){
 })
 names(sheet_list) <- sheet_names[-1]
 
+# Fix typos in naming of fields 
+sheet_list$'2011'[1,2:6][sheet_list$'2011'[1,2:6] == 0] <- 2
+for(x in sheet_names[-1]) { if(length(sheet_list[[x]][1,2:6][sheet_list[[x]][1,2:6] == '4CD']) > 0)  sheet_list[[x]][1,2:6][sheet_list[[x]][1,2:6] == '4CD'] <- 4 }
+
 # Remove average, total rows and combine sheets
 sheet_list_clean <- llply(sheet_list, function(x){
   y <- x[-c(1, grep("Avg.", sheet_list[[1]][,1]), grep("Adv.", sheet_list[[1]][,1]),  grep("Total", sheet_list[[1]][,1])),]
   names(y) <- c("Variable", paste0("Thompson_", x[1,2:6]), paste0("Boone_", 1:2))
   y
 })
+names(sheet_list_clean) <- names(sheet_list)
 
 dat <- ldply(sheet_list_clean, rbind)
 
