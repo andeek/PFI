@@ -39,12 +39,41 @@ wBoone <- weather %>%
 
 wBoone$year <- sapply(wBoone$year, FUN = function(x) extract_numeric(x))
 yields2 <- inner_join(yields, wBoone, by = "year")
+yields2$MAXT <- as.numeric(yields2$MAXT)
+yields2$MINT <- as.numeric(yields2$MINT)
+yields2$PREC <- as.numeric(yields2$PREC)
+```
+
+```{r fig.height=4, fig.width=7}
+head(yields2)
+qplot(PREC, value, data=yields2, colour=farmer, shape=farmer,
+      facets=~crop) + geom_smooth(method="lm", se=F) +
+  ylab("Yield")
+qplot(MAXT, value, data=yields2, colour=farmer, shape=farmer,
+      facets=~crop) + geom_smooth(method="lm", se=F)+
+  ylab("Yield")
+qplot(MINT, value, data=yields2, colour=farmer, shape=farmer,
+      facets=~crop) + geom_smooth(method="lm", se=F)+
+  ylab("Yield")
+```
+
+Fields by year for Thompson that were used for ```SB``` or ```corn```.
+
+```{r}
+# pfi %>% 
+#   filter(item_type == "Unit Quantity", crop %in% c("Corn","SB"),
+#          farmer == "Thompson") %>%
+#   group_by(year, field_id) %>%
+#   select(1:4)
 ```
 
 ```{r}
-head(yields2)
-qplot(year, value, data=yields2, size=PREC, facets=~crop)
-qplot(year, value, data=yields2, size=MAXT, facets=~crop)
-qplot(year, value, data=yields2, size=MINT, facets=~crop)
+yields3 <- pfi %>%
+  filter(item_type == "Expense", crop  %in% c("Corn", "SB")) %>% 
+  spread(item, value) %>% 
+  select(-c(5))
+for (i in 5:36) {
+  yields3[,i] <- yields3[,i] != 0
+}
 ```
 
