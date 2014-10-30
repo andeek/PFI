@@ -76,4 +76,3 @@ for (i in 5:36) {
   yields3[,i] <- yields3[,i] != 0
 }
 ```
-
