@@ -10,8 +10,8 @@ output: pdf_document
 Read data and load libraries.
 
 ```{r message=FALSE}
-pfi <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/PFI_clean.csv")
-weather <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/2-topics/yield/IA_annual_rainfall_raw.csv")
+pfi <- read.csv("GitHub/PFI/data/PFI_clean.csv")
+weather <- read.csv("GitHub/PFI/data/IA_annual_rainfall_raw.csv")
 library(dplyr)
 library(tidyr)
 library(reshape2)
