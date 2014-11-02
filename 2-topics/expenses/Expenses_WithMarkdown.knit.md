@@ -1,13 +1,14 @@
 ---
 title: "Expenses"
 author: "Colin"
-date: "Sunday, November 2, 2014"
+date: "Saturday, October 25, 2014"
 output: pdf_document
 ---
 
 #### Libraries 
 
-```{r,warning=FALSE,message=FALSE}
+
+```r
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -33,9 +34,12 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for Corn Averaged Over Plots by Item')
 ```
 
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-1-1.pdf) 
+
 Let's just pull out the costs that seem "large"
 
-```{r}
+
+```r
   pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
@@ -49,8 +53,11 @@ Let's just pull out the costs that seem "large"
   facet_wrap(~farmer) +
   ggtitle('Expenses over time for Corn Averaged over Plots by Item')
 ```
+
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-2-1.pdf) 
 Let's plot the Difference In Expenses now
-```{r}
+
+```r
   pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
@@ -66,9 +73,12 @@ Let's plot the Difference In Expenses now
   ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
 ```
 
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-3-1.pdf) 
+
 Did we confirm what Purch_Pert is?  Let's look just at SB now.
 
-```{r}
+
+```r
 pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("SB")) %>%
@@ -84,9 +94,12 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for SB Averaged Over Plots by Item')
 ```
 
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-4-1.pdf) 
+
 Let's look at the "large" expenses for SB
 
-```{r}
+
+```r
 pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("SB")) %>%
@@ -100,9 +113,12 @@ pfi[complete.cases(pfi),] %>%
   ggtitle('Expenses over time for SB')
 ```
 
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-5-1.pdf) 
+
 ####Let's try and see all the expenses Thompson records as 0 vs. what Boone pays.
 
-```{r}
+
+```r
 q<-pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
@@ -113,7 +129,17 @@ q<-pfi[complete.cases(pfi),] %>%
 unique(q$item)
 ```
 
-```{r}
+```
+##  [1] Drying_Cost     Bale_Hay        Stubble_Costs   Hedge_per_PL   
+##  [5] Corn_RSL        Straw_Costs     Herbicides      Windrow_Oats   
+##  [9] Mow_per_Windrow Rake            Spring_Tillage  Cover_Crop     
+## [13] Fall_Tillage    Chop_StksCc     Spray_per_Walk  Apply_NH4      
+## [17] Purch_Pert      Crop_Ins        Interest       
+## 41 Levels: Apply_NH4 Bale_Hay Chop_StksCc ... Yield_Per_Acre_Bu_per_pound
+```
+
+
+```r
 boone_extra_expense<-pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
@@ -128,6 +154,8 @@ boone_extra_expense<-pfi[complete.cases(pfi),] %>%
 
 boone_extra_expense
 ```
+
+![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-7-1.pdf) 
 
 
 
