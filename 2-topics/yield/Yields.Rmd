@@ -10,15 +10,15 @@ output: pdf_document
 Read data and load libraries.
 
 ```{r message=FALSE}
-pfi <- read.csv("GitHub/PFI/data/PFI_clean.csv")
-weather <- read.csv("GitHub/PFI/data/IA_annual_rainfall_raw.csv")
+pfi <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/PFI_clean.csv")
+weather <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/IA_annual_rainfall_raw.csv")
 library(dplyr)
 library(tidyr)
 library(reshape2)
 library(ggplot2)
 ```
 
-Subset the ```PFI``` data.
+Subset the ```PFI``` data to get yields for just corn and SB.
 
 ```{r}
 yields <- pfi %>%
@@ -44,6 +44,8 @@ yields2$MINT <- as.numeric(yields2$MINT)
 yields2$PREC <- as.numeric(yields2$PREC)
 ```
 
+Examine the relationship between annual precipitation ```PREC```, mean maximum temperature ```MAXT``` and mean minimum temperature ```MINT```.
+
 ```{r fig.height=4, fig.width=7}
 head(yields2)
 qplot(PREC, value, data=yields2, colour=farmer, shape=farmer,
@@ -57,6 +59,8 @@ qplot(MINT, value, data=yields2, colour=farmer, shape=farmer,
   ylab("Yield")
 ```
 
+Overall, pretty weak relationships between ```Yield``` for ```Corn``` and ```SB``` and ```PREC```, ```MAXT```, and ```MINT```. Perhaps we need to look at monthly or seasonal weather data instead to see more of a trend.
+
 Fields by year for Thompson that were used for ```SB``` or ```corn```.
 
 ```{r}
@@ -67,6 +71,13 @@ Fields by year for Thompson that were used for ```SB``` or ```corn```.
 #   select(1:4)
 ```
 
+Examine how farming practices relate to ```Yield``` by turning the ```Expense``` data into indicator variables:
+\begin{itemize}
+\item Each expense category is an indicator variable
+\item Variable is marked \textbf{TRUE} if the expense for that category for each particular \textbf{field.id} and \textbf{year} is greater than 0.
+\item \textbf{FALSE} if 0.
+\end{itemize}
+
 ```{r}
 yields3 <- pfi %>%
   filter(item_type == "Expense", crop  %in% c("Corn", "SB")) %>% 
@@ -75,4 +86,66 @@ yields3 <- pfi %>%
 for (i in 5:36) {
   yields3[,i] <- yields3[,i] != 0
 }
+yields3$yield <- yields$value
+yields3 <- yields3[,c(1:4,37,5:36)] # move 'yield' to 5th column
+head(yields3)[1:6]
 ```
+
+Eliminate variables that are all ```TRUE``` or all ```FALSE```.
+
+```{r}
+N <- nrow(yields3)
+C <- ncol(yields3)
+idx <- NULL
+for (i in 6:C) {
+  if ((sum(yields3[,i]) == N) | (sum(yields3[,i] == FALSE) == N)) {
+    idx <- c(idx, i)
+  }
+}
+yields3 <- yields3[-idx]
+names(yields3)
+```
+
+10 indicator variables eliminated so far. Break the dataset into yields for ```Corn``` and yields for ```SB```. Elimate variables again that are all ```TRUE``` or all ```FALSE```.
+
+```{r}
+yields3_C <- subset(yields3, crop == "Corn")
+yields3_SB <- subset(yields3, crop == "SB")
+
+# yields3_C doesn't have any variables that are all T or all F
+
+N <- nrow(yields3_SB)
+C <- ncol(yields3_SB)
+idx <- NULL
+for (i in 6:C) {
+  if ((sum(yields3_SB[,i]) == N) | (sum(yields3_SB[,i] == FALSE) == N)) {
+    idx <- c(idx, i)
+  }
+}
+yields3_SB <- yields3_SB[-idx]
+```
+
+Run regsubets to find best model for ```Corn``` yields.
+
+```{r warning=FALSE, message=FALSE}
+library(leaps)
+regsubsets.out <- regsubsets(x = as.matrix(yields3_C[,6:27]), 
+                             y = yields3_C[,5])
+# Variables with black boxes at the highest y-axis label should be included
+plot(regsubsets.out, scale = "adjr2", main = "Adjusted R^2 Corn Model")
+summary(lm(data=yields3_C, yield~Apply_NH4+Crop_Ins+Interest+
+             Mov_and_Stor_bales+Mow_per_Windrow+Rake+Rotary_Hoe+
+             Spray_per_Walk+Stack_Residues))
+```
+
+Run regsubsets for best model for ```SB``` yields.
+
+```{r warning=FALSE}
+regsubsets.out2 <- regsubsets(x = as.matrix(yields3_SB[,6:22]), 
+                             y = yields3_SB[,5])
+plot(regsubsets.out2, scale = "adjr2", main = "Adjusted R^2 SB Model")
+summary(lm(data=yields3_SB, yield~Chop_StksCc+Cover_Crop+Crop_Ins+
+             Cultivation+Maunure_Charge+Mov_and_Stor_bales+Rotary_Hoe+
+             Stack_Residues))
+```
+
