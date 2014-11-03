@@ -149,3 +149,5 @@ summary(lm(data=yields3_SB, yield~Chop_StksCc+Cover_Crop+Crop_Ins+
              Stack_Residues))
 ```
 
+For each year and crop, take out all variables that are the same for Boone and Thompson. Then use those variables to predict 
+the difference in yields for that crop and year.
