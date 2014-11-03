@@ -39,5 +39,5 @@ Residue Income,Residue_Income,Revenue,Revenue from selling crop residue.,
 Straw Income,Straw_Income,Revenue,Revenue from selling straw.,
 Yield Per Acre. Bu./#,Yield_Per_Acre_Bu_per_pound,Unit Quantity,Crop yields per Acre in bushels or pounds.,Based on actual yield from Thompson farm or conventional Boone county average corn and soy bean yields.
 Cost/bu. Or pound,Cost_per_bu_Or_pound,Derived,Total expenses divided by yield (Cost per bushel or pound).,
-Labor Return,Labor_Return,Derived,Net income excluding the cost of labor.,Labor cost/return computed at 7-8 dollars/hour times field time (25 percent added to field time for travel and repairs.)
+Labor Return,Labor_Return,Derived,Wages farmer paid himself.,Labor cost/return computed at 7-8 dollars/hour times field time (25 percent added to field time for travel and repairs.) Pertains to the wages Dick (the farmer) paid himself for the work he was doing (or the work his neighbor was doing for the two-crop rotation)
 Labor&M.R. $/A,LaborandMR_dollar_per_A,Derived,Net income excluding the cost of labor and management.,Labor and management return/acre for all crop refers to any profit after all out of pocket costs are paid. Computed as Total Revenue + Labor Return - Total Expenses
