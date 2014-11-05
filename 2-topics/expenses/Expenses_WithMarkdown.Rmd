@@ -11,6 +11,7 @@ output: pdf_document
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(gridExtra)
 
 ##### Read in Data #####
 #pfi <- read.csv("C:/Users/Colin LB/Documents/GitHub/PFI/data/PFI_clean.csv")
@@ -36,25 +37,26 @@ pfi[complete.cases(pfi),] %>%
 Let's just pull out the costs that seem "large"
 
 ```{r}
-  pfi[complete.cases(pfi),] %>% 
-  filter(item_type == "Expense") %>%
-  filter(crop %in% c("Corn")) %>%
-  filter(item %in% c("Purch_Pert","Seed","Herbicides")) %>%
-  group_by(farmer, year, crop, field_id,item) %>%
-  summarise(total = sum(value)) %>%
-  group_by(farmer,year,item) %>%
-  summarise(avg_total = mean(total)) %>%
-  ggplot() +
-  geom_line(aes(x=year, y=avg_total,color=item)) +
-  facet_wrap(~farmer) +
-  ggtitle('Expenses over time for Corn Averaged over Plots by Item')
+  #pfi[complete.cases(pfi),] %>% 
+  #filter(item_type == "Expense") %>%
+  #filter(crop %in% c("Corn")) %>%
+  #filter(item %in% c("Purch_Pert","Seed","Herbicides")) %>%
+  #group_by(farmer, year, crop, field_id,item) %>%
+  #summarise(total = sum(value)) %>%
+  #group_by(farmer,year,item) %>%
+  #summarise(avg_total = mean(total)) %>%
+  #ggplot() +
+  #geom_line(aes(x=year, y=avg_total,color=item)) +
+  #facet_wrap(~farmer) +
+  #ggtitle('Expenses over time for Corn Averaged over Plots by Item')
 ```
-Let's plot the Difference In Expenses now
+
+Differences in Expenses for Corn 
 ```{r}
   pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
-  filter(item %in% c("Purch_Pert","Seed","Herbicides")) %>%
+  filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
   group_by(farmer, year, crop, field_id,item) %>%
   summarise(total = sum(value)) %>%
   group_by(farmer,year,item) %>%
@@ -66,38 +68,40 @@ Let's plot the Difference In Expenses now
   ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
 ```
 
-Did we confirm what Purch_Pert is?  Let's look just at SB now.
+Did we confirm what Purch_Pert (Fertilizer) and Hedge_per_PL is? 
 
 ```{r}
-pfi[complete.cases(pfi),] %>% 
-  filter(item_type == "Expense") %>%
-  filter(crop %in% c("SB")) %>%
-  filter(item !="Land_Change") %>%
-  filter(value > .01) %>%
-  group_by(farmer, year, crop,field_id,item) %>%
-  summarise(total = sum(value)) %>%
-  group_by(farmer, year,item) %>%
-  summarise(avg_total = mean(total)) %>%
-  ggplot() +
-  geom_line(aes(x=year, y=avg_total, colour=item)) +
-  facet_wrap(~farmer) +
-  ggtitle('Expenses over time for SB Averaged Over Plots by Item')
+#pfi[complete.cases(pfi),] %>% 
+  #filter(item_type == "Expense") %>%
+  #filter(crop %in% c("SB")) %>%
+  #filter(item !="Land_Change") %>%
+  #filter(value > .01) %>%
+  #group_by(farmer, year, crop,field_id,item) %>%
+  #summarise(total = sum(value)) %>%
+  #group_by(farmer, year,item) %>%
+  #summarise(avg_total = mean(total)) %>%
+  #ggplot() +
+  #geom_line(aes(x=year, y=avg_total, colour=item)) +
+  #facet_wrap(~farmer) +
+  #ggtitle('Expenses over time for SB Averaged Over Plots by Item')
 ```
 
-Let's look at the "large" expenses for SB
+Differences in Expenses for SB
 
 ```{r}
-pfi[complete.cases(pfi),] %>% 
+  pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("SB")) %>%
-  filter(item %in% c("Purch_Pert","Seed","Herbicides")) %>%
+  filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
   group_by(farmer, year, crop, field_id,item) %>%
   summarise(total = sum(value)) %>%
   group_by(farmer,year,item) %>%
+  summarise(avg_total = mean(total)) %>%
+  spread(farmer,avg_total) %>%
+  mutate(difference = Boone-Thompson) %>%
   ggplot() +
-  geom_line(aes(x=year, y=total,color=item)) +
-  facet_wrap(~farmer) +
-  ggtitle('Expenses over time for SB')
+  geom_line(aes(x=year,y=difference,color=item)) +
+  ggtitle('Difference (Boone-Thompson) in Average Expenses for SB')
 ```
 
 ####Let's try and see all the expenses Thompson records as 0 vs. what Boone pays.
@@ -129,6 +133,48 @@ boone_extra_expense<-pfi[complete.cases(pfi),] %>%
 boone_extra_expense
 ```
 
+Plots of Yields for Corn and SB between Boone and Thompson.  Thompson seems to be doing consistently better in SB. The yield advantage is less strong for corn.
+```{r}
+  corn_yield<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Unit Quantity") %>%
+  filter(crop %in% c("Corn")) %>%
+  group_by(farmer, year,field_id) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year) %>%
+  summarise(avg_total = mean(total)) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=avg_total,color=farmer)) +
+  ggtitle('Yields for Corn Averaged Over Plots')
+  
+  sb_yield<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Unit Quantity") %>%
+  filter(crop %in% c("SB")) %>%
+  group_by(farmer, year,field_id) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year) %>%
+  summarise(avg_total = mean(total)) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=avg_total,color=farmer)) +
+  ggtitle('Yields for SB Averaged Over Plots')
 
+grid.arrange(corn_yield,sb_yield, ncol=2)
+```
 
+Can we just get Labor Return alone?  If Thompson requires significantly more labor than Boone, it's essential to include. 
+```{r}
+  labor<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Derived") %>%
+  filter(crop %in% c("Corn")) %>%
+  filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
+  group_by(farmer, year,field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year,item) %>%
+  summarise(avg_total = mean(total)) %>%
+  spread(item,avg_total) %>%
+  mutate(difference = LaborandMR_dollar_per_A-Labor_Return) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=difference,color=farmer)) +
+  ggtitle('LaborMR/acre - Labor Return for Corn Averaged Over Plots')
+```
+Still confused about the difference between these two variables.  It doesn't seem like it's just management costs.  It would be nice to get managment and labor costs alone.
 

@@ -1,7 +1,7 @@
 ---
 title: "Expenses"
 author: "Colin"
-date: "Saturday, October 25, 2014"
+date: "Sunday, November 2, 2014"
 output: pdf_document
 ---
 
@@ -37,7 +37,7 @@ pfi[complete.cases(pfi),] %>%
 ![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-1-1.pdf) 
 
 Let's just pull out the costs that seem "large"
-
+/*
 
 ```r
   pfi[complete.cases(pfi),] %>% 
@@ -55,6 +55,7 @@ Let's just pull out the costs that seem "large"
 ```
 
 ![](./Expenses_WithMarkdown_files/figure-latex/unnamed-chunk-2-1.pdf) 
+*/
 Let's plot the Difference In Expenses now
 
 ```r
