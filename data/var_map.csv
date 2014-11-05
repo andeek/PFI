@@ -11,7 +11,7 @@ Drying Cost,Drying_Cost,Expense,Cost of drying corn.,
 Fall Tillage,Fall_Tillage,Expense,Cost of applying fall tillage.,
 Grain Handling,Grain_Handling,Expense,Grain handling fee.,
 Grain Harvest,Grain_Harvest,Expense,Cost of harvesting grain.,
-Hedge/P.L.,Hedge_per_PL,Expense,,
+Hedge/P.L.,Hedge_per_PL,Expense,Hedge or priced later.," Under such contracts, a farmer delivers grain to an elevator but does not establish a price with the elevator until a later date chosen by the farmer. This is the cost associated with paying the local elevator to store one's grain until it is sold."
 Herbicides,Herbicides,Expense,Herbicide costs.,Taken from ISU's estimated production cost.
 Interest,Interest,Expense,,
 Land Change,Land_Change,Expense,,
