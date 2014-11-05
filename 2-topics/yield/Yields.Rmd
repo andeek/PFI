@@ -16,6 +16,7 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 library(ggplot2)
+library(leaps)
 ```
 
 Subset the ```PFI``` data to get yields for just corn and SB.
@@ -128,7 +129,6 @@ yields3_SB <- yields3_SB[-idx]
 Run regsubets to find best model for ```Corn``` yields.
 
 ```{r warning=FALSE, message=FALSE}
-library(leaps)
 regsubsets.out <- regsubsets(x = as.matrix(yields3_C[,6:27]), 
                              y = yields3_C[,5])
 # Variables with black boxes at the highest y-axis label should be included
@@ -136,6 +136,15 @@ plot(regsubsets.out, scale = "adjr2", main = "Adjusted R^2 Corn Model")
 summary(lm(data=yields3_C, yield~Apply_NH4+Crop_Ins+Interest+
              Mov_and_Stor_bales+Mow_per_Windrow+Rake+Rotary_Hoe+
              Spray_per_Walk+Stack_Residues))
+```
+
+Note that when NH4 is applied, the expected yield decreases by 51.892 when everything else is held constant. Why is crop insurance such a good predictor? Maybe the farmer buys crop insurance when they think it's going to be a bad year. Or it's just because Thompson stopped using crop insurance after 2002, and has had consistently higher yields than the Boone average.
+
+Here's a model that makes more "sense":
+
+```{r}
+summary(lm(data=yields3_C, yield~Apply_NH4+
+             Mow_per_Windrow+Rotary_Hoe+Spray_per_Walk))
 ```
 
 Run regsubsets for best model for ```SB``` yields.
@@ -147,5 +156,13 @@ plot(regsubsets.out2, scale = "adjr2", main = "Adjusted R^2 SB Model")
 summary(lm(data=yields3_SB, yield~Chop_StksCc+Cover_Crop+Crop_Ins+
              Cultivation+Maunure_Charge+Mov_and_Stor_bales+Rotary_Hoe+
              Stack_Residues))
+```
+
+Crop insurance again is found to be a significant predictor.
+
+Here is a model that makes more "sense":
+
+```{r}
+summary(lm(data=yields3_SB, yield~Cultivation+Maunure_Charge+Rotary_Hoe))
 ```
 
