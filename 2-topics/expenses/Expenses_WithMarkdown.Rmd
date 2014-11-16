@@ -61,6 +61,7 @@ Differences in Expenses for Corn
   summarise(total = sum(value)) %>%
   group_by(farmer,year,item) %>%
   summarise(avg_total = mean(total)) %>%
+  ungroup() %>%
   spread(farmer,avg_total) %>%
   mutate(difference = Boone-Thompson) %>%
   ggplot() +
@@ -97,6 +98,7 @@ Differences in Expenses for SB
   summarise(total = sum(value)) %>%
   group_by(farmer,year,item) %>%
   summarise(avg_total = mean(total)) %>%
+  ungroup() %>%
   spread(farmer,avg_total) %>%
   mutate(difference = Boone-Thompson) %>%
   ggplot() +
@@ -160,9 +162,24 @@ Plots of Yields for Corn and SB between Boone and Thompson.  Thompson seems to b
 grid.arrange(corn_yield,sb_yield, ncol=2)
 ```
 
-Can we just get Labor Return alone?  If Thompson requires significantly more labor than Boone, it's essential to include. 
+ 
 ```{r}
-  labor<-pfi[complete.cases(pfi),] %>% 
+  sb<-pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Derived") %>%
+  filter(crop %in% c("SB")) %>%
+  filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
+  group_by(farmer, year,field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year,item) %>%
+  summarise(avg_total = mean(total)) %>%
+  ungroup() %>%
+  spread(item,avg_total) %>%
+  mutate(difference = LaborandMR_dollar_per_A-Labor_Return) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=difference,color=farmer)) +
+  ggtitle('LaborMR/acre - Labor Return for SB Averaged Over Plots')
+
+  corn<-pfi[complete.cases(pfi),] %>% 
   filter(item_type == "Derived") %>%
   filter(crop %in% c("Corn")) %>%
   filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
@@ -170,11 +187,34 @@ Can we just get Labor Return alone?  If Thompson requires significantly more lab
   summarise(total = sum(value)) %>%
   group_by(farmer, year,item) %>%
   summarise(avg_total = mean(total)) %>%
+  ungroup() %>%
   spread(item,avg_total) %>%
   mutate(difference = LaborandMR_dollar_per_A-Labor_Return) %>%
   ggplot() +
   geom_line(aes(x=year, y=difference,color=farmer)) +
   ggtitle('LaborMR/acre - Labor Return for Corn Averaged Over Plots')
+
+grid.arrange(sb,corn, ncol=2)
 ```
-Still confused about the difference between these two variables.  It doesn't seem like it's just management costs.  It would be nice to get managment and labor costs alone.
+
+####If I understand the mesures correctly, this is showing us (Total Revenue-Total Expenses)/Acre.  I am surprised the corn differencs are not bigger: especially in 1992 where according to the Thompson Report, Dick saved $61/acre on drying costs--and drying costs are not considered labor.  I know revenue could explain the difference, but it seems doubtful a revenue difference scaled per acre could be that great.
+
+```{r}
+  pfi[complete.cases(pfi),] %>% 
+  filter(item_type == "Derived") %>%
+  #filter(crop %in% c("Corn")) %>%
+  filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
+  group_by(farmer, year,crop,field_id,item) %>%
+  summarise(total = sum(value)) %>%
+  group_by(farmer, year,crop,item) %>%
+  summarise(avg_total = mean(total)) %>%
+  filter(item %in% c("Labor_Return")) %>%
+  ggplot() +
+  geom_line(aes(x=year, y=avg_total,color=crop)) +facet_wrap(~farmer)+
+  ggtitle('Labor Return by Crop')
+```
+
+####Let's just look at labor return alone, which is labor Return/costs (wages).  It's odd that all 4 crops move in lockstep.  I would think each crop would have different returns and costs of labor where they wouldn't scale so perfectly.  It  looks like something happened in 2001 that shot the returns up.  From looking at average corn prices (farmdoc.illinois.edu) they are flat between 2000-2005.  I am guessing it's an expense thing (or accounting change)?
+
+
 
