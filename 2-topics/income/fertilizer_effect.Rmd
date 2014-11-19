@@ -1,57 +1,21 @@
-%% LyX 2.0.3 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
-\documentclass{article}
-%\usepackage[sc]{mathpazo}
-%\usepackage[T1]{fontenc}
-\usepackage{geometry}
-\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
-\setcounter{secnumdepth}{2}
-\setcounter{tocdepth}{2}
-\usepackage{url}
-\usepackage[unicode=true,pdfusetitle,
-            bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
-            breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
-{hyperref}
-\hypersetup{
-  pdfstartview={XYZ null null 1}}
-%\usepackage{breakurl}
+---
+title: "Effect of Additional Income and Expenses"
+author: "Maggie Johnson"
+output: html_document
+---
 
-\makeatletter
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-\usepackage{enumerate}
-\usepackage{amsmath}
-\usepackage{epsfig}
-\usepackage{hhline}
-\usepackage{amsmath}
-\usepackage{amstext}
-\usepackage{amssymb}
-\usepackage{float}
+Here we explore the effect of purchased fertilizer on the difference in expenses/profit between the Boone and Thompson farms. Also of interest is the effect of the additional income (and likewise expenses) in the Thompson practices.
 
-\makeatother
-
-\begin{document}
-
-\begin{center}
-{\Large \bf{Effect of Additional Income and Expenses}}
-\end{center}
-
-<<'setup',echo=FALSE, results='hide', message=FALSE,warning=FALSE>>=
-options(replace.assign=TRUE, width=90)
-opts_chunk$set(tidy=FALSE, fig.align='center',message=FALSE, warning=FALSE)
-@
-
-
-<<'libraries', echo=FALSE, warning=FALSE>>=
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+##### Libraries #####
+library(knitr)
 library(ggplot2)
 library(reshape2)
 library(plyr)
 library(gridExtra)
-@
+```
 
-\noindent Here we explore the effect of purchased fertilizer on the difference in expenses/profit between the Boone and Thompson farms. Also of interest is the effect of the additional income (and likewise expenses) in the Thompson practices.
-
-
-<<'code', echo=FALSE, warning=FALSE>>=
+```{r, echo=FALSE, warning=FALSE}
 ##### Read in Data #####
 setwd("C:/Users/majohnso/Documents/GitHub/PFI")
 dat <- read.csv("data/PFI_clean.csv")
@@ -109,39 +73,43 @@ df<-merge(df, expenses_overall)
 df$rawprofit <- df$mean_income - df$mean_expense
 df$profit_extra <- income2$mean_allincome - df$mean_expense
 df$rawprofit_nofert <- df$mean_income - df$mean_expense_nofert
-@
+
+```
 
 
-\section*{Manure Charge and Purchased Fertilizer}
+### With/Without Fertilizer Costs
+
 The profit and losses from livestock on the Thompson farms are not included in the data. It is suggested that Thompson fertilized the fields using manure from his livestock, and subsequently has an expense due to spreading manure, but no expenses for purchasing fertilizer. The Boone expenses on the other hand include a large sum (relative to other expenses) for purchasing fertilizer. As livestock costs and profits are not included, it seems reasonable to explore excluding these variables from the analysis. Note: this analysis was done without additional income from straw, stubble, and residue.
 
-\subsection*{Overall Expenses with/without Purchased Fertilizer}
- 
-<<'expenses', fig.show='hold', fig.width=10, fig.height=4, fig.pos='H', echo=FALSE>>=
-theme_set(theme_bw(base_family="serif"))
-p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses") + theme(legend.position="bottom")
-p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer") + theme(legend.position="bottom")
+#### Expenses
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
+theme_set(theme_bw(base_size=12))
+p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses by Farm") + theme(legend.position="bottom")
+p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer by Farm") + theme(legend.position="bottom")
 grid.arrange(p1,p2,ncol=2)
-@
+```
 
-\subsection*{Profit with/without Purchased Fertilizer}
-<<'profit', fig.show='hold', fig.width=10, fig.height=4, fig.pos='H', echo=FALSE>>=
-p5<-qplot(data=df, x=year, y=rawprofit, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit/Acre/Year") + theme(legend.position="bottom")
-p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit/Acre/Year w/o Fertilizer") + theme(legend.position="bottom")
+#### Profit 
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
+p5<-qplot(data=df, x=year, y=rawprofit, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit") + theme(legend.position="bottom")
+p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Fertilizer") + theme(legend.position="bottom")
 grid.arrange(p5,p6,ncol=2)
-@
+```
 
-\noindent Removal of fertilizer affects seems to lessen the difference in expenses and profit between the Boone and Thompson averages, but the Thompson farm still consistently comes out ahead. 
+Removal of fertilizer affects seems to lessen the difference in expenses and profit between the Boone and Thompson averages, but the Thompson farm still consistently comes out ahead. 
 
-\subsection*{Overall Expenses with/without Purchased Fertilizer}
-<<'expenses_crop', fig.show='hold', fig.width=10, fig.height=10, fig.pos='H', echo=FALSE>>=
+#### With/Without Fertilizer Costs -- Just Corn vs SB
+
+```{r, fig.pos='h', fig.width=8, fig.height=8, fig.align='center'}
 p3<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses") + facet_wrap(~crop) + theme(legend.position="bottom")
 p4<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer") + facet_wrap(~crop) + theme(legend.position="bottom")
 grid.arrange(p3,p4,ncol=1)
-@
-\noindent When just looking at corn, expenses for Boone drop considerably and decrease the gap between farms.
+```
 
-<<'codeb', echo=FALSE, warning=FALSE>>=
+When just looking at corn, expenses for Boone drop considerably and decrease the gap between farms.
+
+
+```{r, echo=FALSE, warning=FALSE}
 ### Remove fertilizer
 expense_nofert_crop<-ddply(subset(dat, item_type=="Expense" & item!="Purch_Pert" & item!="Maunure_Charge" & item!="Windrow_Oats" & item!="Stubble_Costs" & item!="Straw_Costs"), .(year, field, crop), summarize,
                     expense = sum(value))
@@ -170,36 +138,30 @@ df<-merge(df, expenses_overall)
 df$rawprofit <- df$mean_income - df$mean_expense
 df$profit_extra <- income2$mean_allincome - df$mean_expense
 df$rawprofit_nofert <- df$mean_income - df$mean_expense_nofert
-@
+```
 
-\newpage
+### All Additional Income and Expenses
+The exploratory analysis aboves focuses on crop income, ignoring additional income from straw, stubble, and residue. However, we should also remove costs related with these income sources if we don't include them (Purch\_Pert, Manure\_Charge, Windrow\_Oats, Stubble\_Costs, Straw\_Costs).
 
-\section*{Additional Income and Expenses}
-The exploratory analysis aboves focuses on crop income, ignoring additional income from straw, stubble, and residue. However, we should also remove costs related with these income sources if we don't account for income.
-
-\subsection*{Overall Expenses with/without Additional Expenses/Income}
-
-<<'expensesb', fig.show='hold', fig.width=10, fig.height=4, fig.pos='H', echo=FALSE>>=
-theme_set(theme_bw(base_family="serif"))
+#### Expenses
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
 p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses by Farm") + theme(legend.position="bottom")
-p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer by Farm") + theme(legend.position="bottom")
+p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Additional Practices") + theme(legend.position="bottom")
 grid.arrange(p1,p2,ncol=2)
-@
+```
 
-\subsection*{Profit with/without Additional Expenses/Income}
-<<'profitb', fig.show='hold', fig.width=10, fig.height=4, fig.pos='H', echo=FALSE>>=
+#### Profit
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
+
 p5<-qplot(data=df, x=year, y=profit_extra, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit") + theme(legend.position="bottom")
-p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Fertilizer") + theme(legend.position="bottom")
+p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Additional Practices") + theme(legend.position="bottom")
 grid.arrange(p5,p6,ncol=2)
-@
+```
 
-% \section*{Overall Expenses with/without Purchased Fertilizer}
-% <<'expenses_cropb', fig.show='hold', fig.width=10, fig.height=10, fig.pos='H', echo=FALSE>>=
-% p3<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses") + facet_wrap(~crop) + theme(legend.position="bottom")
-% p4<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer") + facet_wrap(~crop) + theme(legend.position="bottom")
-% grid.arrange(p3,p4,ncol=1)
-% @
+```{r, fig.pos='h', fig.width=6, fig.align='center'}
+diff_pextra<-subset(df, practice=="Thompson")$profit_extra - subset(df, practice=="Boone")$profit_extra
+diff_pnone<-subset(df, practice=="Thompson")$rawprofit_nofert - subset(df, practice=="Boone")$rawprofit_nofert
+df2<-data.frame(year=rep(unique(df$year),2), diff<-c(diff_pextra, diff_pnone), method=rep(c("Addition Practices", "No Additional Practices"), each=length(diff_pextra)))
 
-
-
-\end{document}
+qplot(data=df2, x=year, y=diff, group=method, colour=method, geom="line", ylab="Difference in Profit", xlab="Year", main="Thompson Advantage") + geom_hline(aes(yintercept=0)) + theme(legend.position="bottom")
+```

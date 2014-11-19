@@ -1,0 +1,90 @@
+---
+title: "Sources of Differences in Income"
+author: "Maggie Johnson"
+output: html_document
+---
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+##### Libraries #####
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(plyr)
+library(gridExtra)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+##### Read in Data #####
+setwd("C:/Users/majohnso/Documents/GitHub/PFI")
+dat <- read.csv("data/PFI_clean.csv")
+var <- read.csv("data/var_map.csv")
+
+###### sooo messy, fix later
+### Transform the Data ###
+dat<-dat[complete.cases(dat),]
+dat$field <- factor(paste(dat$farmer, dat$field_id, sep=""))
+years <- split(dat, dat$year)
+byyear <- lapply(years, function(u) acast(u, field~item, value.var="value"))
+
+years2 <- data.frame(year=rep(unique(dat$year), each=7), field=rep(levels(dat$field), 25), do.call(rbind, byyear))
+years2$crop <- as.factor(unique(data.frame(dat$year,dat$field, dat$crop))[,3])
+years2 <- years2[complete.cases(years2),]
+years2$practice<-as.factor(sub("[0-9].*", "", years2$field))
+
+#### Overall Income 
+total_income_crop<-ddply(years2, .(year, practice, crop), summarize,
+                   mean_income = mean(LaborandMR_dollar_per_A))
+total_income<-ddply(total_income_crop, .(year, practice), summarize,
+              mean_income=mean(mean_income))
+```
+
+### Overall Profit 
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
+theme_set(theme_bw(base_size=12))
+p1<-qplot(data=total_income, x=year, y=mean_income, group=practice, colour=practice, geom="line", ylab="Profit", xlab="Year", main="Overall Profit") + theme(legend.position="bottom")
+diff_pextra<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
+p2<-qplot(x=unique(total_income$year), y=diff_pextra, geom="line", ylab="Difference in Profit", xlab="Year", main="Thompson Advantage") + geom_hline(aes(yintercept=0)) 
+grid.arrange(p1,p2,ncol=2)
+
+qplot(data=subset(total_income_crop, crop %in% c("Corn","SB")), x=year, y=mean_income, colour=practice, group=practice, geom="line") + facet_wrap(~crop) + theme(legend.position="bottom")
+
+
+```
+
+This is the difference in average profit when profit is calculated as the sum of all income (including labor return) minus expenses.
+
+
+```{r, echo=FALSE, warning=FALSE}
+### Proportion of profit due to labor return
+years2$Total_Income <- years2$Pasture_per_Stubble + years2$Straw_Income + years2$Residue_Income + years2$Crop_Income
+lr_effect_crop<-ddply(years2, .(year, practice, crop), summarize,
+                   prop_LR = mean(abs((Labor_Return)/Total_Income)))
+lr_effect<-ddply(lr_effect_crop, .(year, practice), summarize,
+              prop_LR=mean(prop_LR))
+
+lr_crop<-ddply(years2, .(year, practice, crop), summarize,
+                   mean_LR = mean(Labor_Return))
+lr<-ddply(lr_crop, .(year, practice), summarize,
+              mean_LR=mean(mean_LR))
+
+```
+
+### Proportion of Income Due to Labor Return
+```{r, fig.pos='h', fig.width=9, fig.align='center'}
+qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=crop, group=crop, geom="line") + facet_wrap(~practice)
+
+qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") 
+```
+
+Thompson farms have higher average labor returns in general, but this shows that the labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farms. Do the work yourself! 
+
+### Proportion of Thompson Advantage Due to Labor Return
+```{r, fig.pos='h', fig.width=7, fig.align='center'}
+diff_profit<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
+diff_lr<-subset(lr, practice=="Thompson")$mean_LR - subset(lr, practice=="Boone")$mean_LR
+
+df2<-data.frame(year=unique(total_income$year), diff_profit, diff_lr, prop_lr=diff_lr/diff_profit)
+qplot(data=df2, x=year, y=prop_lr, geom="line", xlab="Year", ylab="Proportion of Profit Difference") 
+```
+
+Consistently, between 10-20% of Thompson's advantage is due to the the difference in labor return between Boone and Thompson farms.
