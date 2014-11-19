@@ -77,3 +77,47 @@ qplot(year,value,data=subset(thompsonYield,crop=="Corn"),col=as.factor(field_id)
 qplot(year,value,data=subset(thompsonYield,crop=="Hay"),col=as.factor(field_id),geom="Line",main="Hay")
 qplot(year,value,data=subset(thompsonYield,crop=="SB"),col=as.factor(field_id),geom="Line",main="SB")
 qplot(year,value,data=subset(thompsonYield,crop=="Oats"),col=as.factor(field_id),geom="Line",main="Oats")
+
+
+
+##past years results
+
+yieldperacres
+districtLevelYield<-districtYield[c(2,15,19)]
+names(districtLevelYield)<-c("year","crop","distYield")
+districtLevelYield$crop<-as.character(districtLevelYield$crop)
+districtLevelYield$crop[districtLevelYield$crop=="CORN"]<-"Corn"
+districtLevelYield$crop[districtLevelYield$crop=="HAY"]<-"Hay"
+districtLevelYield$crop[districtLevelYield$crop=="OATS"]<-"Oats"
+districtLevelYield$crop[districtLevelYield$crop=="SOYBEANS"]<-"SB"
+yieldperacres$value[yieldperacres$crop=="Hay"]<-yieldperacres$value[yieldperacres$crop=="Hay"]/2000
+
+previousCrop<-merge(yieldperacres,districtLevelYield,by=c("year","crop"))
+previousCrop$yearBefore<-previousCrop$year-1
+
+together<-merge(previousCrop,previousCrop[c(1,2,3,4)],by.x=c("yearBefore","farmer","field_id"),by.y=c("year","farmer","field_id"))
+together$cropOrder<-paste(together$crop.y,together$crop.x,sep="-")
+together$diffFromAverage<-together$value-together$distYield
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.x=="Corn"),col=as.factor(cropOrder),geom="Line",main="Corn")#MAY SHOW SOMETHING
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.x=="Oats"),col=as.factor(cropOrder),geom="Line",main="Oats")
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.x=="Hay"),col=as.factor(cropOrder),geom="Line",main="Hay")
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.x=="SB"),col=as.factor(cropOrder),geom="Line",main="SB")
+
+
+qplot(year,value/distYield,data=subset(together,farmer=="Thompson"&crop.y=="Corn"),col=as.factor(cropOrder),geom="Line",main="Corn")#MAY SHOW SOMETHING
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.y=="Oats"),col=as.factor(cropOrder),geom="Line",main="Oats")
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.y=="Hay"),col=as.factor(cropOrder),geom="Line",main="Hay")
+qplot(year,diffFromAverage,data=subset(together,farmer=="Thompson"&crop.y=="SB"),col=as.factor(cropOrder),geom="Line",main="SB")
+
+
+
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.x=="Corn"),col=as.factor(cropOrder),geom="Line",main="Corn")  
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.x=="Oats"),col=as.factor(cropOrder),geom="Line",main="Oats")
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.x=="Hay"),col=as.factor(cropOrder),geom="Line",main="Hay")
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.x=="SB"),col=as.factor(cropOrder),geom="Line",main="SB")
+
+
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.y=="Corn"),col=as.factor(cropOrder),geom="Line",main="Corn")
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.y=="Oats"),col=as.factor(cropOrder),geom="Line",main="Oats")
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.y=="Hay"),col=as.factor(cropOrder),geom="Line",main="Hay")
+qplot(year,value,data=subset(together,farmer=="Thompson"&crop.y=="SB"),col=as.factor(cropOrder),geom="Line",main="SB")
