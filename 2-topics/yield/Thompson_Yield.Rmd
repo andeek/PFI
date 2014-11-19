@@ -3,6 +3,7 @@ title: "Thompson Yields"
 author: "Evan “Pete” Walsh"
 date: "November 19, 2014"
 output: html_document
+runtime: shiny
 ---
 
 <hr>
@@ -14,6 +15,7 @@ pfi <- read.csv("/Users/marianwaitwalsh/GitHub/PFI/data/PFI_clean.csv")
 library(dplyr)
 library(tidyr)
 library(reshape2)
+library(ggvis)
 library(ggplot2)
 ```
 
@@ -72,3 +74,10 @@ grid.arrange(plot1, plot2,
              plot3, plot4, ncol=2)
 ```
 
+```{r defineWidget, fig.height=3, echo=FALSE}
+source("widget.R")
+```
+
+```{r}
+widget(yields)
+``` 
