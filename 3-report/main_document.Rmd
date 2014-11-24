@@ -1,0 +1,55 @@
+---
+title: "PFI - Thompson Report"
+author: "Maggie Johnson, Andee Kaplan, Colin Lewis-Beck, Michael Price, and Pete Walsh"
+date: "11/24/2014"
+output:
+  pdf_document:
+    includes:
+      in_header: extra/preamble.tex
+    number_sections: yes
+bibliography: extra/refs.bib
+---
+
+```{r libraries, echo=FALSE, message=FALSE}
+## Add all libraries used loaded here
+## Do not load libraries within individual parts
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(ggvis)
+library(ggplot2)
+```
+
+```{r data, echo=FALSE, message=FALSE}
+## Pull in data here for all parts to use
+## Do not pull in data within parts
+dat <- read.csv("../data/PFI_clean.csv")
+var <- read.csv("../data/var_map.csv")
+```
+
+```{r code, echo=FALSE, message=FALSE}
+## Source in external code chunks here
+## Do not source external code within parts
+```
+
+# Data
+```{r intro, child='parts/data.Rmd', eval=TRUE}
+```
+
+# Expenses
+```{r intro, child='parts/expenses.Rmd', eval=TRUE}
+```
+
+# Income
+```{r intro, child='parts/income.Rmd', eval=TRUE}
+```
+
+# Yield
+```{r intro, child='parts/yield.Rmd', eval=TRUE}
+```
+
+# Conclusions
+```{r intro, child='parts/conclusions.Rmd', eval=TRUE}
+```
+
+# References

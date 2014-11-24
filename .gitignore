@@ -13,3 +13,5 @@
 
 *.Rproj
 
+#pdf for report (merge conflicts)
+3-report/*.pdf

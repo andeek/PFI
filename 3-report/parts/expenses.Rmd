@@ -1,0 +1,1 @@
+This is the section on expenses. Do not compile this, compile the main doc instead.
