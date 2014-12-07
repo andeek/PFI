@@ -1,15 +1,9 @@
 This is the section on expenses. Do not compile this, compile the main doc instead.
 
-#####We will look at expenses, crop yield (Corn and SB), and labor return to try and tease out the differences between Thompson and Boone's farming practices.
+We will look at expenses, crop yield (Corn and SB), and labor return to try and tease out the differences between Thompson and Boone's farming practices.
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(gridExtra)
-
-  pfi <- read.csv("../../data/PFI_clean.csv")
-  pfi[complete.cases(pfi),] %>% 
+dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn")) %>%
   filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
@@ -24,8 +18,9 @@ library(gridExtra)
   geom_line(aes(x=year,y=difference,color=item)) +
   ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
 ```
+
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-  pfi[complete.cases(pfi),] %>% 
+dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("SB")) %>%
   filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
@@ -41,11 +36,11 @@ library(gridExtra)
   ggtitle('Difference (Boone-Thompson) in Average Expenses for SB')
 ```
 
-##### In terms of expenses, Thompson gets the biggest savings from lower fertilizer and herbicide costs, which is most likely due to his organic farming practices.  There are also expenses that Boone has to pay for that Thompson does not have at all.
+In terms of expenses, Thompson gets the biggest savings from lower fertilizer and herbicide costs, which is most likely due to his organic farming practices.  There are also expenses that Boone has to pay for that Thompson does not have at all.
 
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-boone_extra_expense<-pfi[complete.cases(pfi),] %>% 
+boone_extra_expense<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
   filter(crop %in% c("Corn")) %>%
@@ -59,8 +54,9 @@ boone_extra_expense<-pfi[complete.cases(pfi),] %>%
 
 boone_extra_expense
 ```
+
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-boone_extra_expense<-pfi[complete.cases(pfi),] %>% 
+boone_extra_expense<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
   filter(crop %in% c("SB")) %>%
@@ -75,10 +71,10 @@ boone_extra_expense<-pfi[complete.cases(pfi),] %>%
 boone_extra_expense
 ```
 
-##### Tillage (Spring and Fall), as well as applyin Nitrogen to Corn are extra expenses that Thompson does not incur.
+Tillage (Spring and Fall), as well as applying Nitrogen to Corn are extra expenses that Thompson does not incur.
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-  corn_yield<-pfi[complete.cases(pfi),] %>% 
+corn_yield<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Unit Quantity") %>%
   filter(crop %in% c("Corn")) %>%
   group_by(farmer, year,field_id) %>%
@@ -87,9 +83,10 @@ boone_extra_expense
   summarise(avg_total = mean(total)) %>%
   ggplot() +
   geom_line(aes(x=year, y=avg_total,color=farmer)) +
-  ggtitle('Avg Corn Yields')
+  ggtitle('Avg Corn Yields') +
+  theme(legend.position="bottom")
   
-  sb_yield<-pfi[complete.cases(pfi),] %>% 
+sb_yield<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Unit Quantity") %>%
   filter(crop %in% c("SB")) %>%
   group_by(farmer, year,field_id) %>%
@@ -98,16 +95,17 @@ boone_extra_expense
   summarise(avg_total = mean(total)) %>%
   ggplot() +
   geom_line(aes(x=year, y=avg_total,color=farmer)) +
-  ggtitle('Avg SB Yields')
+  ggtitle('Avg SB Yields') +
+  theme(legend.position="bottom")
 
 grid.arrange(corn_yield,sb_yield, ncol=2)
 ```
 
-#####It looks like Thompson also has slightly better yields than Boone, which when combined with expenses, gives him an even greater edge.  Lastly, we can look at labor return, but the data is more opaque.
+It looks like Thompson also has slightly better yields than Boone, which when combined with expenses, gives him an even greater edge.  Lastly, we can look at labor return, but the data is more opaque.
 
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-  pfi[complete.cases(pfi),] %>% 
+dat[complete.cases(dat),] %>% 
   filter(item_type == "Derived") %>%
   #filter(crop %in% c("Corn")) %>%
   filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
@@ -121,7 +119,7 @@ grid.arrange(corn_yield,sb_yield, ncol=2)
   ggtitle('Labor Return by Crop')
 ```
 
-#####Again, Thompson seems to be getting a greater labor return than Boone.  It is a little strange, though, that the labor return for each crop moves in parallel.  There must be some assumptions in his calculations of labor that explain this pattern.
+Again, Thompson seems to be getting a greater labor return than Boone.  It is a little strange, though, that the labor return for each crop moves in parallel.  There must be some assumptions in his calculations of labor that explain this pattern.
 
 
 
