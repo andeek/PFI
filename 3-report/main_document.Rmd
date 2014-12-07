@@ -19,6 +19,7 @@ library(tidyr)
 library(ggvis)
 library(ggplot2)
 library(gridExtra)
+library(xtable)
 ```
 
 ```{r data, echo=FALSE, message=FALSE}

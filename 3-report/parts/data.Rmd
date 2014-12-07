@@ -1,1 +1,12 @@
-This is the section on data. Do not compile this, compile the main doc instead.
+The data comes to us following a 2009 report by Practical Farmers of Iowa (PFI) on agriculture alternatives by Dick Thompson. His report is available on the [PFI website](http://practicalfarmers.org/wp-content/uploads/2014/01/Ch7_Economics.pdf). The Thompson dataset was collected from `r min(dat$year)` to `r max(dat$year)` and contains Thompson's farming practices and results as well as his neighbor's farming practices and the Boone county average yield and expenses for the corresponding practices.
+
+The dataset was organized as an Excel spreadsheet with each year of data being contained in its own sheet. Within each year the data had each row as an expense/revenue/unit price/derived quantity, as well as totals and averages. Each column corresponded to a field in either Thompson's or his neighbor's farm. We have transformed this complicated structure into a single `csv` with a row corresponding to each year/field/item granularity. The columns include the year, field, farmer, crop, item, item type, and value of the item. The item type was created by us, to better understand the relationship of the items. Additionally, any averages and totals have been removed to avoid confusion. This puts the data in more of a `tidy' form, as described in [@wickham2014tidy].
+
+In addition to reformatting the dataset, we have created a data dictionary that defines and categorizes each data item in the spreadsheet. This dictionary is printed in full in table \ref{tab:data_dictionary}.
+
+```{r, results='asis', echo=FALSE, message=FALSE, warning=FALSE}
+var[, 1:4] %>% 
+  xtable(align=c('l','l','l','l', 'p{.3\\textwidth}'), label='tab:data_dictionary', caption='Data dictionary created by the StatCom team to categarize the Thompson dataset.') %>%
+  print(include.rownames=FALSE, comment=FALSE)
+```
+
