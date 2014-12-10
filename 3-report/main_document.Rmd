@@ -14,6 +14,7 @@ bibliography: extra/refs.bib
 ## Add all libraries used loaded here
 ## Do not load libraries within individual parts
 library(knitr)
+library(plyr)
 library(dplyr)
 library(tidyr)
 library(ggvis)
@@ -21,7 +22,6 @@ library(ggplot2)
 library(gridExtra)
 library(xtable)
 library(reshape2)
-library(plyr)
 ```
 
 ```{r data, echo=FALSE, message=FALSE}
@@ -44,12 +44,12 @@ var <- read.csv("../data/var_map.csv")
 ```{r intro, child='parts/expenses.Rmd', eval=TRUE}
 ```
 
-# Income
-```{r intro, child='parts/income.Rmd', eval=TRUE}
-```
-
 # Yield
 ```{r intro, child='parts/yield.Rmd', eval=TRUE}
+```
+
+# Income
+```{r intro, child='parts/income.Rmd', eval=TRUE}
 ```
 
 # Conclusions
