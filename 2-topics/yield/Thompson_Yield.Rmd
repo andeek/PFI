@@ -63,13 +63,13 @@ hay <- yields %>% filter(crop == "Hay") %>%
 ```{r message=FALSE}
 require(gridExtra)
 plot1 <- qplot(prev_crop, yield, data=filter(corn, !is.na(prev_crop))) +
-  ggtitle("Corn")
+  ggtitle("Corn") + geom_boxplot()
 plot2 <- qplot(prev_crop, yield, data=filter(sb, !is.na(prev_crop))) + 
-  ggtitle("SB")
+  ggtitle("SB") + geom_boxplot()
 plot3 <- qplot(prev_crop, yield, data=filter(oats, !is.na(prev_crop))) +
-  ggtitle("Oats")
+  ggtitle("Oats") + geom_boxplot()
 plot4 <- qplot(prev_crop, yield, data=filter(hay, !is.na(prev_crop))) + 
-  ggtitle("Hay")
+  ggtitle("Hay") + geom_boxplot()
 grid.arrange(plot1, plot2, 
              plot3, plot4, ncol=2)
 ```
