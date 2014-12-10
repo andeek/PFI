@@ -20,6 +20,8 @@ library(ggvis)
 library(ggplot2)
 library(gridExtra)
 library(xtable)
+library(reshape2)
+library(plyr)
 ```
 
 ```{r data, echo=FALSE, message=FALSE}
