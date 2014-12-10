@@ -79,7 +79,7 @@ df$rawprofit_nofert <- df$mean_income - df$mean_expense_nofert
 
 ### With/Without Fertilizer Costs
 
-The profit and losses from livestock on the Thompson farms are not included in the data. It is suggested that Thompson fertilized the fields using manure from his livestock, and subsequently has an expense due to spreading manure, but no expenses for purchasing fertilizer. The Boone expenses on the other hand include a large sum (relative to other expenses) for purchasing fertilizer. As livestock costs and profits are not included, it seems reasonable to explore excluding these variables from the analysis. Note: this analysis was done without additional income from straw, stubble, and residue.
+The profit and losses from livestock on the Thompson farms are not included in the data. It is suggested that Thompson fertilized his fields using manure from his livestock, and subsequently has an expense due to spreading manure, but no expenses for purchasing fertilizer. The Boone expenses on the other hand include a large sum (relative to other expenses) for purchasing fertilizer. As livestock costs and profits are not included, it seems reasonable to explore excluding these variables from the analysis. Note: this analysis was done without additional income from straw, stubble, and residue.
 
 #### Expenses
 ```{r, fig.pos='h', fig.width=9, fig.align='center'}
