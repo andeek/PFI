@@ -10,7 +10,7 @@ output:
 bibliography: extra/refs.bib
 ---
 
-```{r libraries, echo=FALSE, message=FALSE}
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
 ## Add all libraries used loaded here
 ## Do not load libraries within individual parts
 library(knitr)
