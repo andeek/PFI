@@ -29,6 +29,7 @@ library(reshape2)
 ## Do not pull in data within parts
 dat <- read.csv("../data/PFI_clean.csv")
 var <- read.csv("../data/var_map.csv")
+countyYield<-read.csv("../data/BooneYields.csv")
 ```
 
 ```{r code, echo=FALSE, message=FALSE}
@@ -41,8 +42,8 @@ var <- read.csv("../data/var_map.csv")
 ```
 
 # Expenses
-```{r intro, child='parts/expenses.Rmd', eval=TRUE}
-```
+#```{r intro, child='parts/expenses.Rmd', eval=TRUE}
+#```
 
 # Yield
 ```{r intro, child='parts/yield.Rmd', eval=TRUE}

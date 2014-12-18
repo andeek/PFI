@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 We would like to know what factors influence the yield for a particular crop. Since Thompson used a crop-rotation system, one thing that we looked at was whether the yeild of a crop planted on a particular field for a particular year was influenced by the type of crop that was planted on the same field during the previous year. We also tried to determine whether specific farming practices during a given year had an influence on the yield for a crop. The farming practices of Thompson are best described by the expense variables. For example, if ```Apply_NH4``` was positive for a given field and year, then we know that Thompson decided to use fertilizing on that particular crop for that year. Thus, by looking at how the year-by-year expense for a particular practice and the yield of the corresponding crop, we can get some idea of how these factors influence yield.
 
 ```{r echo=FALSE}
@@ -24,6 +33,71 @@ yields <- yields %>%
 
 # Reorder variables
 yields <- yields[,c(2,1,3,36,37,4:35)]
+```
+### Thompson Yield vs County Average
+The first thing to look at is if the yield Thompson is achieving is significantly better than crop yield in the same area.  To do this, we will compare Thompson's crop yields to the crop yield in Boone County.  This data was obtained from the USDA website.  Line charts show the comparison of Thompson's yield to the county average over time.  It appears that Thompson's yield is higher than that of the county average.  To ensure that this is the case a paired t-test was performed for each of the four crops.
+
+```{r echo=FALSE}
+crops <- dat 
+yieldperacres<-subset(crops,item=="Yield_Per_Acre_Bu_per_pound")
+thompsonYield<-subset(yieldperacres,farmer=="Thompson")
+
+ThompsonAve<-ddply(thompsonYield,.(year,crop),transform,averageYield=ave(value))
+cornThompson<-subset(ThompsonAve,crop=="Corn")
+
+countyYield<-subset(countyYield,Period=="YEAR")
+
+cornCounty<-subset(countyYield,Commodity=="CORN")
+sbCounty<-subset(countyYield,Commodity=="SOYBEANS")
+hayCounty<-subset(countyYield,Commodity=="HAY")
+oatCounty<-subset(countyYield,Commodity=="OATS")
+
+
+plot(cornThompson$year,cornThompson$averageYield,type="l",main="Thompsone Yield vs Boone Average-Corn",ylab="Yield",xlab="Year")
+lines(cornCounty$Year,cornCounty$Value,col="red")
+legend(2005,120,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
+
+
+soyThompson<-subset(ThompsonAve,crop=="SB")
+plot(soyThompson$year,soyThompson$averageYield,type="l",main="Thompsone Yield vs Boone Average-Soybeans",ylim=c(20,70),ylab="Yield",xlab="Year")
+lines(sbCounty$Year,sbCounty$Value,col="red")
+legend(2005,35,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
+
+hayThompson<-subset(ThompsonAve,crop=="Hay")
+hayThompson$averageYield<-hayThompson$averageYield/2000
+plot(hayThompson$year,hayThompson$averageYield,type="l",col="black",ylim=c(0,9),main="Thompsone Yield vs Boone Average-Hay",ylab="Yield",xlab="Year")
+lines(hayCounty$Year,hayCounty$Value,col="red")
+legend(2005,2.5,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
+
+
+oatsThompson<-subset(ThompsonAve,crop=="Oats")
+plot(oatsThompson$year,oatsThompson$averageYield,type="l",,ylim=c(30,150),main="Thompsone Yield vs Boone Average-Oats",ylab="Yield",xlab="Year")
+lines(oatCounty$Year,oatCounty$Value,col="red")
+legend(2005,60,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
+
+
+```
+
+```{r echo=FALSE}
+###t-tests
+
+
+ttestCorn<-merge(cornThompson,cornCounty,by.x="year",by.y="Year")
+cornT<-t.test(x=ttestCorn$value,y=ttestCorn$Value,paired=T)
+print(paste("The paired t-test for corn gives a t-value of: ", round(as.numeric(cornT$statistic),3) ,  "and a p-value of: ", round(cornT$p.value,7),sep=" "))
+
+ttestsb<-merge(soyThompson,sbCounty,by.x="year",by.y="Year")
+sbT<-t.test(x=ttestsb$value,y=ttestsb$Value,paired=T)
+print(paste("The paired t-test for soybeans gives a t-value of: ", round(as.numeric(sbT$statistic),3) ,  "and a p-value of: ", round(sbT$p.value,9),sep=" "))
+
+ttestHay<-merge(hayThompson,hayCounty,by.x="year",by.y="Year")
+hayT<-t.test(x=ttestHay$value,y=ttestHay$Value,paired=T)
+print(paste("The paired t-test for hay gives a t-value of: ", round(as.numeric(hayT$statistic),3) ,  "and a p-value of: ", round(hayT$p.value,9),sep=" "))
+
+ttestOats<-merge(oatsThompson,oatCounty,by.x="year",by.y="Year")
+oatsT<-t.test(x=ttestOats$value,y=ttestOats$Value,paired=T)
+print(paste("The paired t-test for oats gives a t-value of: ", round(as.numeric(oatsT$statistic),3) ,  "and a p-value of: ", round(oatsT$p.value,9),sep=" "))
+
 ```
 
 ### Yield by previous crop
@@ -81,14 +155,17 @@ The amount spent on maunure exhibits a concave-down, quadratic relationship with
 
 ```{r}
 yields %>% filter(crop == "Corn") %>%
-  ggplot(aes(Maunure_Charge, yield)) + geom_point() + 
-  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
+ggplot(aes(Maunure_Charge, yield)) + geom_point() + 
+stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
 
 The amount of money spend on herbicides appears to have a quadratic, concave-down relationship with the yield of soy beans.
 
 ```{r}
-yields %>% filter(crop == "SB") %>%
-  ggplot(aes(Herbicides, yield)) + geom_point() + 
-  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
+ yields %>% filter(crop == "SB") %>%
+ ggplot(aes(Herbicides, yield)) + geom_point() + 
+ stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
+
+
+
