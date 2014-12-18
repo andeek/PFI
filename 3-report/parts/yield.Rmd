@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
 We would like to know what factors influence the yield for a particular crop. Since Thompson used a crop-rotation system, one thing that we looked at was whether the yeild of a crop planted on a particular field for a particular year was influenced by the type of crop that was planted on the same field during the previous year. We also tried to determine whether specific farming practices during a given year had an influence on the yield for a crop. The farming practices of Thompson are best described by the expense variables. For example, if ```Apply_NH4``` was positive for a given field and year, then we know that Thompson decided to use fertilizing on that particular crop for that year. Thus, by looking at how the year-by-year expense for a particular practice and the yield of the corresponding crop, we can get some idea of how these factors influence yield.
 =======
 We would like to know what factors influence the yield for a particular crop. Since Thompson used a crop-rotation system, one thing that we looked at was whether the yeild of a crop planted on a particular field for a particular year was influenced by the type of crop that was planted on the same field during the previous year. We also tried to determine whether specific farming practices during a given year had an influence on the yield for a crop. The farming practices of Thompson are best described by the expense variables. For example, if ```Apply_NH4``` was positive for a given field and year, then we know that Thompson decided to use fertilizing on that particular crop for that year (it turns out he never actually used NH4). Thus, by looking at how the year-by-year expense for a particular practice are correlated to the yield of the corresponding crop, we can get some idea of how these factors influence yield.
->>>>>>> origin/master
+
 
 ```{r echo=FALSE}
 yields <- dat %>%
@@ -165,17 +155,16 @@ stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 
 The amount of money spend on herbicides appears to have a quadratic, concave-down relationship with the yield of soy beans.
 
-<<<<<<< HEAD
 ```{r}
  yields %>% filter(crop == "SB") %>%
  ggplot(aes(Herbicides, yield)) + geom_point() + 
  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
+```
 =======
 ```{r echo=FALSE}
 yields %>% filter(crop == "SB") %>%
   ggplot(aes(Herbicides, yield)) + geom_point() + 
   stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
->>>>>>> origin/master
 ```
 
 
