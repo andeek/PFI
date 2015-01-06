@@ -161,7 +161,7 @@ The amount of money spend on herbicides appears to have a quadratic, concave-dow
  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
 
-=======
+
 
 
 
