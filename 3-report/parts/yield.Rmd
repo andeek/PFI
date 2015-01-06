@@ -94,75 +94,74 @@ print(paste("The paired t-test for oats gives a t-value of: ", round(as.numeric(
 
 ```
 
+Interpret t-tests....
+
 ### Yield by previous crop
 
-Below are boxplots of the yield for each crop based on the crop that was planted on the same field during the previous year. Soy beans and oats always followed corn according to Thompson's rotation system. What is interesting is how the yields for corn and hay vary.
+Soy beans and oats are always preceded by corn according to Thompson's rotation system. However, corn is preceded by either hay or soy beans, and hay is preceded by either hay or oats. The boxplots below illustrate how the yield for corn and hay vary based on the crop that was planted on the same field during the previous year.
 
 ```{r echo=FALSE}
-corn <- yields %>% filter(crop == "Corn") %>%
-  select(-3)
-sb <- yields %>% filter(crop == "SB") %>%
-  select(-3)
-oats <- yields %>% filter(crop == "Oats") %>%
+corn <- yields %>% filter(crop == "Corn", prev_crop != "Oats") %>%
   select(-3)
 hay <- yields %>% filter(crop == "Hay") %>%
   select(-3)
 ```
 
-```{r message=FALSE, echo=FALSE}
+```{r message=FALSE, echo=FALSE, fig.height=4}
 plot1 <- qplot(prev_crop, yield, data=filter(corn, !is.na(prev_crop))) +
-  ggtitle("Corn") + geom_boxplot()
-plot2 <- qplot(prev_crop, yield, data=filter(sb, !is.na(prev_crop))) + 
-  ggtitle("SB") + geom_boxplot()
-plot3 <- qplot(prev_crop, yield, data=filter(oats, !is.na(prev_crop))) +
-  ggtitle("Oats") + geom_boxplot()
-plot4 <- qplot(prev_crop, yield, data=filter(hay, !is.na(prev_crop))) + 
-  ggtitle("Hay") + geom_boxplot()
-grid.arrange(plot1, plot2, 
-             plot3, plot4, ncol=2)
+  ggtitle("Corn") + geom_boxplot() + xlab("Previous Crop")
+plot2 <- qplot(prev_crop, yield, data=filter(hay, !is.na(prev_crop))) + 
+  ggtitle("Hay") + geom_boxplot() + xlab("Previous Crop")
+grid.arrange(plot1, plot2, ncol=2)
 ```
 
-When oats were planted in the previous year, the yield for corn is significantly lower than when hay or soy beans were planted the year before. However there is not much of a difference between the yield of corn when the previous crop was hay versus soy beans. The yield of hay is also slightly higher when the previous crop was oats, as opposed to hay.
+The plots show that the yield for corn when hay was planted during the year before is slightly higher than when when soy beans were planted during the year before. The yield of hay is also slightly higher when the previous crop was oats, as opposed to hay. To determine if these differences are statistically signficant, we used a two-sample t-test for the yields of each crop based on the preceding crop. The resulting p-value for the yield of corn was 0.4993, and was 0.7785 for hay. Thus, there is not significant evidence that planting hay or soy beans before corn has any difference on the yield of corn. Similarly, there is no evidence that planting hay or oats before hay has any difference on the yield of hay.
 
-A future study could further examine these variations by looking at how the yields of soy beans and oats are affected if the previous crop is something other than corn. Obviously the knowledge that one crop performs signficantly better when a certain crop is planted on the same field the year before could be very valuable information. This could help the farmer develop an optimized rotation strategy.
+```{r, echo=FALSE}
+# Is there a statistically significant difference in the yields for corn and hay based
+# on the previous crop?
+# corn1 <- corn %>% filter(!is.na(prev_crop), prev_crop == "Hay") %>% select(c(3,4))
+# corn2 <- corn %>% filter(!is.na(prev_crop), prev_crop == "SB") %>% select(c(3,4))
+# hay1 <- hay %>% filter(!is.na(prev_crop), prev_crop == "Hay") %>% select(c(3,4))
+# hay2 <- hay %>% filter(!is.na(prev_crop), prev_crop == "Oats") %>% select(c(3,4))
+#t.test(corn1$yield, corn2$yield) # p-value of 0.4993
+#t.test(hay1$yield, hay2$yield) # p-value of 0.7785
+```
+
+A future study could further examine these variations by looking at how the yields of soy beans and oats are affected if the previous crop is something other than corn, or how the yields of corn and hay are affected by different preceding crops other the ones studied here. Obviously the knowledge that one crop performs signficantly better when a certain crop is planted on the same field the year before could be very valuable information. This could help the farmer develop an optimized rotation strategy.
 
 ## Yield by expense
 
 After examining how each individual expense related to the yield of each crop, we found four interesting relationships: three having to do with corn and one having to do with soy beans.
 
-Corn and ```Spring_Tillage``` have a moderately strong positive relationship. As the money spent on tilling in the spring increases, the yield of corn generally increases. The plot below illustrates this relationship after removing all the years when no money was spent on spring tillage.
-
-```{r echo=FALSE}
+```{r echo=FALSE, fig.width=6, fig.height=4}
 yields %>% filter(crop == "Corn", Spring_Tillage > 0) %>%
   ggplot(aes(Spring_Tillage, yield)) + geom_point() + geom_smooth(method="lm")
 ```
 
-The plot below shows the expenses of ```Rotary_Hoe``` against the yield of corn with a quadratic trend fitted to the data. The trend suggests that the more money spent on ```Rotary_Hoe```, the higher the expected yield will be, but the marginal benifit to yield decreases as the expense increases.
+Corn and ```Spring_Tillage``` have a moderately strong positive relationship. As the money spent on tilling in the spring increases, the yield of corn generally increases. The plot below illustrates this relationship after removing all the years when no money was spent on spring tillage.
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.width=6, fig.height=4}
 yields %>% filter(crop == "Corn") %>%
   ggplot(aes(Rotary_Hoe, yield)) + geom_point() + 
   stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
 
-The amount spent on maunure exhibits a concave-down, quadratic relationship with the yield of corn. The expected yield increases as the expense on maunure increases up to a point, after which the expected yield actually decreases.
+The plot above shows the expenses of ```Rotary_Hoe``` against the yield of corn with a quadratic trend fitted to the data. The trend suggests that the more money spent on ```Rotary_Hoe```, the higher the expected yield will be, but the marginal benifit to yield decreases as the expense increases.
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.width=6, fig.height=4}
 yields %>% filter(crop == "Corn") %>%
-ggplot(aes(Maunure_Charge, yield)) + geom_point() + 
-stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
+  ggplot(aes(Maunure_Charge, yield)) + geom_point() + 
+  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
 
-The amount of money spend on herbicides appears to have a quadratic, concave-down relationship with the yield of soy beans.
+The amount spent on maunure exhibits a concave-down, quadratic relationship with the yield of corn. The expected yield increases as the expense on maunure increases up to a point, after which the expected yield actually decreases.
 
-```{r}
- yields %>% filter(crop == "SB") %>%
+```{r echo=FALSE, fig.width=6, fig.height=4}
+yields %>% filter(crop == "SB") %>%
  ggplot(aes(Herbicides, yield)) + geom_point() + 
  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
 ```
 
-
-
-
-
+The amount of money spend on herbicides appears to have a quadratic, concave-down relationship with the yield of soy beans.
 
