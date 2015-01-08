@@ -53,10 +53,10 @@ lr<-ddply(lr_crop, .(year, practice), summarize,
 ```
 
 ### Proportion of Income Due to Labor Return
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE,}
-qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=crop, group=crop, geom="line") + facet_wrap(~practice)
+```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
+qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=crop, group=crop, geom="line") + facet_wrap(~practice) + theme(legend.position="bottom")
 
-qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") 
+qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") + theme(legend.position="bottom")
 ```
 
 Thompson farms have higher average labor returns in general, but this shows that the labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farms. Do the work yourself, if you can! 
