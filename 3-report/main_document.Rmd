@@ -42,8 +42,8 @@ countyYield<-read.csv("../data/BooneYields.csv")
 ```
 
 # Expenses
-#```{r intro, child='parts/expenses.Rmd', eval=TRUE}
-#```
+```{r intro, child='parts/expenses.Rmd', eval=TRUE}
+```
 
 # Yield
 ```{r intro, child='parts/yield.Rmd', eval=TRUE}

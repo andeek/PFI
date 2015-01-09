@@ -1,4 +1,4 @@
-We will look at expenses, crop yield (Corn and SB), and labor return to try and tease out the differences between Thompson and Boone's farming practices.
+Although the Thompson farm employed a five crop rotation we focus on corn and soybeans as those are the only two crops planted at the Boone farm.  After averaging expeneses by year, and over the number of fields, we plot the difference in expenses between the two farms (by crop) after selecting differences that are significantly different from zero.  
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
 dat[complete.cases(dat),] %>% 
@@ -15,9 +15,8 @@ dat[complete.cases(dat),] %>%
   ggplot() +
   geom_line(aes(x=year,y=difference,color=item)) +
   ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
-```
 
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
+
 dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("SB")) %>%
@@ -32,9 +31,13 @@ dat[complete.cases(dat),] %>%
   ggplot() +
   geom_line(aes(x=year,y=difference,color=item)) +
   ggtitle('Difference (Boone-Thompson) in Average Expenses for SB')
+
 ```
 
-In terms of expenses, Thompson gets the biggest savings from lower fertilizer and herbicide costs, which is most likely due to his organic farming practices.  There are also expenses that Boone has to pay for that Thompson does not have at all.
+
+For both corn and soybeans the biggest cost discrepency is for fertilizer and herbicide.  The Boone farm consistently pays more per acre for fertilizer and herbicide.  Moreover, starting at around 1994 the difference between Thompson and Boon increases sharply, peaking in 2009.  In 2009, Boone payed approximatly $180/acre more for corn fertilizer and $110/acre more for soybean fertilizer.  The 2nd biggest cost difference is for herbicide.  This expense is more stable, hovering around $25/acre more for Boone compared to Thompson.  These differences are likely a result of Thompson's organic farming practices.
+
+There are also expenses that only Boone accrues.
 
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
@@ -51,9 +54,7 @@ boone_extra_expense<-dat[complete.cases(dat),] %>%
   ggtitle('Boone Extra Expenses for Corn')
 
 boone_extra_expense
-```
 
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
 boone_extra_expense<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
@@ -69,7 +70,12 @@ boone_extra_expense<-dat[complete.cases(dat),] %>%
 boone_extra_expense
 ```
 
-Tillage (Spring and Fall), as well as applying Nitrogen to Corn are extra expenses that Thompson does not incur.
+The extra expenses that Boone incurs are for tillage (spring and fall), and applying Nitrogen to the soil where corn is planted.  The Nitrogen expenses drop preciptiously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitogen is not applied to the Boone soybean fields.  
+
+Spring and fall tillage are also added approximatly $10/acre to the Boone farm.  As part of his organic farming practice, Thompson does not till his land.
+
+Although Thompson has lower expenses than Boone, it could be a moot point if his yield is substanitally lower than Boone, too.  Therefore, we will also compare yields to see if Thompson is able to still produce despite spending less on fertilizers and herbicide.  
+
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
 corn_yield<-dat[complete.cases(dat),] %>% 
@@ -99,13 +105,12 @@ sb_yield<-dat[complete.cases(dat),] %>%
 grid.arrange(corn_yield,sb_yield, ncol=2)
 ```
 
-It looks like Thompson also has slightly better yields than Boone, which when combined with expenses, gives him an even greater edge.  Lastly, we can look at labor return, but the data is more opaque.
-
+The last expense to consider is labor.  The data does not contain the number of hours each farmer put into his work.  However, we do have variables on labor return.  According to the Thompson report, labor return is calculated after all out of pocket costs are paid.  The Boone labor return for corn and soybeans is identical and fairly flat.  This is likely due to assumptions that Thompson had to make about the labor hours on Boone's farm.  
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
 dat[complete.cases(dat),] %>% 
   filter(item_type == "Derived") %>%
-  #filter(crop %in% c("Corn")) %>%
+  filter(crop %in% c("Corn","SB")) %>%
   filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
   group_by(farmer, year,crop,field_id,item) %>%
   summarise(total = sum(value)) %>%
@@ -117,7 +122,7 @@ dat[complete.cases(dat),] %>%
   ggtitle('Labor Return by Crop')
 ```
 
-Again, Thompson seems to be getting a greater labor return than Boone.  It is a little strange, though, that the labor return for each crop moves in parallel.  There must be some assumptions in his calculations of labor that explain this pattern.
+
 
 ## Building crop sequences
 We are interested in the expenses incurred from sequential planting of crops in rotation. Due to the nature of the data we have available, this exploration will be limited to the Thompson dataset only, seeing as the Boone average data does not have rotation of crops.
