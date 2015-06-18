@@ -20,11 +20,10 @@ value <- dat %>%
 # Add crop yields to yields df
 yields <- yields %>% 
   left_join(value, by = c("field_id" = "field_id", "year" = "year")) %>%
-  rename(crop = crop.x, prev_crop = crop.y, yield = value) %>%
-  select(-3)
+  rename(crop = crop.x, prev_crop = crop.y, yield = value)
 
 # Reorder variables
-yields <- yields[,c(2,1,3,36,37,4:35)]
+yields <- yields[,c(2,1,3,36:38,4:35)]
 ```
 
 ### Thompson Yield vs County Average

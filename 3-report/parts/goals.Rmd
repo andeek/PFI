@@ -1,0 +1,3 @@
+The main goal of this report is to provide PFI with an exploratory analysis of their data. We focus on an overview of the data and work to draw preliminary insights through primarily graphical methods. In this manner we allow the data to tell a story, one that can be further explored by PFI.
+
+Our analysis is broken up into three parts by subject: expenses, yield, and income. These three facets of Mr. Thompson's data form a picture of his success from multiple perspectives. By splitting our analysis in three pieces we allow for each perspective to shape our conclusions about his farming practices in comparison to traditional practices.

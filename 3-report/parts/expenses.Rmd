@@ -16,6 +16,9 @@ dat[complete.cases(dat),] %>%
   geom_line(aes(x=year,y=difference,color=item)) +
   ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
 
+```
+
+```{r}
 
 dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
@@ -43,7 +46,7 @@ There are also expenses that only Boone accrues.
 
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-boone_extra_expense<-dat[complete.cases(dat),] %>% 
+boone_extra_expense_corn <- dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
   filter(crop %in% c("Corn")) %>%
@@ -55,9 +58,12 @@ boone_extra_expense<-dat[complete.cases(dat),] %>%
   geom_line(aes(x=year, y=total,linetype=item)) +
   ggtitle('Boone Extra Expenses for Corn')
 
-boone_extra_expense
+boone_extra_expense_corn
 
-boone_extra_expense<-dat[complete.cases(dat),] %>% 
+```
+
+```{r}
+boone_extra_expense_sb<-dat[complete.cases(dat),] %>% 
   filter(item_type == "Expense") %>%
   filter(farmer=="Boone") %>%
   filter(crop %in% c("SB")) %>%
@@ -69,7 +75,7 @@ boone_extra_expense<-dat[complete.cases(dat),] %>%
   geom_line(aes(x=year, y=total,linetype=item)) +
   ggtitle('Boone Extra Expenses for SB')
 
-boone_extra_expense
+boone_extra_expense_sb
 ```
 
 These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields.  The Nitrogen expenses drop precipitously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitrogen was not applied to the Boone soybean fields.  

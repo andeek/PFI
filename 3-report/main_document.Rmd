@@ -24,6 +24,11 @@ library(xtable)
 library(reshape2)
 ```
 
+```{r options, echo=FALSE, message=FALSE}
+opts_chunk$set(message = FALSE, warning = FALSE, fig.height = 4, echo = FALSE)
+ggplot2::theme_set(theme_bw(base_family = "serif"))
+```
+
 ```{r data, echo=FALSE, message=FALSE}
 ## Pull in data here for all parts to use
 ## Do not pull in data within parts
@@ -37,24 +42,32 @@ countyYield<-read.csv("../data/BooneYields.csv")
 ## Do not source external code within parts
 ```
 
-# Data
-```{r intro, child='parts/data.Rmd', eval=TRUE}
+# Introduction
+```{r intro, child='parts/intro.Rmd', eval=TRUE}
+```
+
+## Data
+```{r data, child='parts/data.Rmd', eval=TRUE}
+```
+
+## Goals of Analysis
+```{r goals, child='parts/goals.Rmd', eval=TRUE}
 ```
 
 # Expenses
-```{r intro, child='parts/expenses.Rmd', eval=TRUE}
+```{r expense, child='parts/expenses.Rmd', eval=TRUE}
 ```
 
 # Yield
-```{r intro, child='parts/yield.Rmd', eval=TRUE}
+```{r yield, child='parts/yield.Rmd', eval=TRUE}
 ```
 
 # Income
-```{r intro, child='parts/income.Rmd', eval=TRUE}
+```{r income, child='parts/income.Rmd', eval=TRUE}
 ```
 
 # Conclusions
-```{r intro, child='parts/conclusions.Rmd', eval=TRUE}
+```{r conclusion, child='parts/conclusions.Rmd', eval=TRUE}
 ```
 
 # References

@@ -7,6 +7,6 @@ In addition to reformatting the dataset, we have created a data dictionary that 
 ```{r, results='asis', echo=FALSE, message=FALSE, warning=FALSE}
 var[, 1:4] %>% 
   xtable(align=c('l','l','l','l', 'p{.3\\textwidth}'), label='tab:data_dictionary', caption='Data dictionary created by the StatCom team to categarize the Thompson dataset.') %>%
-  print(include.rownames=FALSE, comment=FALSE)
+  print(include.rownames=FALSE, comment=FALSE, table.placement = "ht!")
 ```
 
