@@ -1,5 +1,5 @@
 ## Effect or Labor Return 
-Here we explore the effect or Labor Return on overall profit between the Thompson and Boone practices.
+Here we explore the effect of Labor Return on overall profit between the Thompson and Boone practices. From what we understand, Labor Return is the amount of money Thompson paid himself for the work he was doing on his own, instead of hiring out. We explore how much of Thompson's advantage is due to Labor Return.
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -23,7 +23,7 @@ total_income<-ddply(total_income_crop, .(year, practice), summarize,
 ```
 
 ### Overall Profit 
-```{r, fig.pos='h', fig.width=9, fig.align='center', echo=FALSE}
+```{r, fig.pos='H', fig.width=9, fig.align='center', echo=FALSE}
 theme_set(theme_bw(base_size=12))
 p1<-qplot(data=total_income, x=year, y=mean_income, group=practice, colour=practice, geom="line", ylab="Profit", xlab="Year", main="Overall Profit") + theme(legend.position="bottom")
 diff_pextra<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
@@ -35,7 +35,7 @@ qplot(data=subset(total_income_crop, crop %in% c("Corn","SB")), x=year, y=mean_i
 
 ```
 
-This is the difference in average profit when profit is calculated as the sum of all income (including labor return) minus expenses.
+These plots demonstrate the difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. It is clear that Thompson's profit is consistently higher than the Boone farm averages. The question of interest is to determine where this profit is coming from. Better practices, better land, labor return, etc.
 
 ```{r, echo=FALSE, warning=FALSE}
 ### Proportion of profit due to labor return
@@ -53,11 +53,14 @@ lr<-ddply(lr_crop, .(year, practice), summarize,
 ```
 
 ### Proportion of Income Due to Labor Return
+
 ```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
 qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=crop, group=crop, geom="line") + facet_wrap(~practice) + theme(legend.position="bottom")
 
 qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") + theme(legend.position="bottom")
 ```
+
+The plots above show what proportion of Thompson and Boone total income is accounted for by Labor Return.\\
 
 Thompson farms have higher average labor returns in general, but this shows that the labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farms. Do the work yourself, if you can! 
 
@@ -206,3 +209,5 @@ df2<-data.frame(year=rep(unique(df$year),2), diff<-c(diff_pextra, diff_pnone), m
 
 qplot(data=df2, x=year, y=diff, group=method, colour=method, geom="line", ylab="Difference in Profit", xlab="Year", main="Thompson Advantage") + geom_hline(aes(yintercept=0)) + theme(legend.position="bottom")
 ```
+
+After accounting for these additional variables, we still see that the differences in profit between Thompson's farm and the Boone averages decreases. Thompson still has consistently higher profits across the years, but it is interesting to see that a ``large" portion of the advantage was due to these fertilizer effects.
