@@ -26,7 +26,7 @@ library(reshape2)
 ```
 
 ```{r options, echo=FALSE, message=FALSE}
-opts_chunk$set(message = FALSE, warning = FALSE, fig.height = 4, echo = FALSE)
+opts_chunk$set(message = FALSE, warning = FALSE, fig.height = 3.5, echo = FALSE)
 ggplot2::theme_set(theme_bw(base_family = "serif"))
 ```
 

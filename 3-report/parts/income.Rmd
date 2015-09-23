@@ -1,5 +1,8 @@
-## Effect or Labor Return 
-Here we explore the effect of Labor Return on overall profit between the Thompson and Boone practices. From what we understand, Labor Return is the amount of money Thompson paid himself for the work he was doing on his own, instead of hiring out. We explore how much of Thompson's advantage is due to Labor Return.
+```{r}
+dat %>%
+  filter(item_type == "Revenue")
+
+```
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -22,20 +25,27 @@ total_income<-ddply(total_income_crop, .(year, practice), summarize,
               mean_income=mean(mean_income))
 ```
 
-### Overall Profit 
-```{r, fig.pos='H', fig.width=9, fig.align='center', echo=FALSE}
-theme_set(theme_bw(base_size=12))
-p1<-qplot(data=total_income, x=year, y=mean_income, group=practice, colour=practice, geom="line", ylab="Profit", xlab="Year", main="Overall Profit") + theme(legend.position="bottom")
+An overall look at income leads us directly to the question of profit. Figure \ref{fig:profit_diff} demonstrates the difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. It is clear that Thompson's profit is consistently higher than the Boone farm averages. Accordingly, Thompson's income from corn and soy are higher for every year than the Boone county average, as can been seen in figure \ref{fig:income_crop}. The question of interest is to determine where this profit is coming from. Better practices, better land, labor return, etc.
+
+
+```{r, fig.cap="\\label{fig:profit_diff}The difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. The left plot is the overall profit, while the right plot shows the differences between Thompson and the Boone average."}
+p1<-qplot(data=total_income, x=year, y=mean_income, group=practice, colour=practice, geom="line", ylab="Profit", xlab="Year") + theme(legend.position="bottom")
 diff_pextra<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
-p2<-qplot(x=unique(total_income$year), y=diff_pextra, geom="line", ylab="Difference in Profit", xlab="Year", main="Thompson Advantage") + geom_hline(aes(yintercept=0)) 
+p2<-qplot(x=unique(total_income$year), y=diff_pextra, geom="line", ylab="Difference in Profit (Thompson - Boone)", xlab="Year") + geom_hline(aes(yintercept=0)) 
 grid.arrange(p1,p2,ncol=2)
 
+
+```
+
+```{r, fig.cap="\\label{fig:income_crop}Average income by crop for corn and soy over time compared between Thompson and Boone county. Thompson's income is higher for every year for both crops."}
 qplot(data=subset(total_income_crop, crop %in% c("Corn","SB")), x=year, y=mean_income, colour=practice, group=practice, geom="line") + facet_wrap(~crop) + theme(legend.position="bottom")
 
 
 ```
 
-These plots demonstrate the difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. It is clear that Thompson's profit is consistently higher than the Boone farm averages. The question of interest is to determine where this profit is coming from. Better practices, better land, labor return, etc.
+## Effect of Labor Return 
+Here we explore the effect of Labor Return on overall profit between the Thompson and Boone practices. From what we understand, Labor Return is the amount of money Thompson paid himself for the work he was doing on his own, instead of hiring out. We explore how much of Thompson's advantage is due to Labor Return.
+
 
 ```{r, echo=FALSE, warning=FALSE}
 ### Proportion of profit due to labor return
@@ -52,28 +62,32 @@ lr<-ddply(lr_crop, .(year, practice), summarize,
 
 ```
 
-### Proportion of Income Due to Labor Return
 
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
-qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=crop, group=crop, geom="line") + facet_wrap(~practice) + theme(legend.position="bottom")
+```{r, fig.cap="\\label{fig:LR_prop}The proportion of Thompson's and Boone county total income that is accounted for by Labor return. The right plot shows the same, but split by crop type. Labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farm."}
+qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") + theme(legend.position="bottom") -> plot1
 
-qplot(data=lr_effect, x=year, y=prop_LR, colour=practice, group=practice, geom="line") + theme(legend.position="bottom")
+qplot(data=lr_effect_crop, x=year, y=prop_LR, colour=practice, group=practice, geom="line") + 
+  facet_wrap(~crop) + 
+  theme(legend.position="bottom") -> plot2
+
+grid.arrange(plot1, plot2, ncol = 2)
+
+
 ```
 
-The plots above show what proportion of Thompson and Boone total income is accounted for by Labor Return.\\
+Figure \ref{fig:LR_prop} shows what proportion of Thompson and Boone total income is accounted for by Labor Return.
 
 Thompson farms have higher average labor returns in general, but this shows that the labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farms. Do the work yourself, if you can! 
 
-### Proportion of Thompson Advantage Due to Labor Return
-```{r, fig.pos='h', fig.width=7, fig.align='center',echo=FALSE}
+```{r, fig.cap="\\label{fig:LR_profit}The proportion of profit difference (Thompson - Boone) that is accounted by labor returns. Once again, this is showing labor returns to be a major contributor to Thompson's profit advantage over the Boone County average neighbor.", fig.height = 2}
 diff_profit<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
 diff_lr<-subset(lr, practice=="Thompson")$mean_LR - subset(lr, practice=="Boone")$mean_LR
 
 df2<-data.frame(year=unique(total_income$year), diff_profit, diff_lr, prop_lr=diff_lr/diff_profit)
-qplot(data=df2, x=year, y=prop_lr, geom="line", xlab="Year", ylab="Proportion of Profit Difference") 
+qplot(data=df2, x=year, y=prop_lr, geom="line", xlab="Year", ylab="Prop. of Profit Diff.") + ylim(c(0, .5))
 ```
 
-Consistently, between 10-20% of Thompson's advantage is due to the the difference in labor return between Boone and Thompson farms.
+Consistently, between 10-20% of Thompson's profit advantage is due to the the difference in labor return between Boone and Thompson farms. This is seen in figure \ref{fig:LR_profit}, which shows the proportion of profit difference (Thompson - Boone) that is accounted by labor returns. Once again, this is showing labor returns to be a major contributor to Thompson's profit advantage over the Boone County average neighbor.
 
 ## Effect of Livestock
 
@@ -121,34 +135,43 @@ df$rawprofit_nofert <- df$mean_income - df$mean_expense_nofert
 
 ```
 
+The profit and losses from livestock on the Thompson farms are not included in the data. It is suggested that Thompson fertilized his fields using manure from his livestock, and subsequently has an expense due to spreading manure, but no expenses for purchasing fertilizer. The Boone expenses on the other hand include a large sum (relative to other expenses) for purchasing fertilizer. As livestock costs and profits are not included, it seems reasonable to explore excluding these variables from the analysis. Note: this analysis was done without additional income from straw, stubble, and residue in order to further even the comparison since Thompson's neight did not receive incoming from these items.
 
-### With/Without Fertilizer Costs
+```{r, fig.cap="Expenses"}
+df %>%
+  gather(fertilizer, mean_expense, mean_expense, mean_expense_nofert) %>% 
+  mutate(fertilizer = ifelse(fertilizer == "mean_expense", "With fertilizer", "W/o fertilizer")) %>%
+  ggplot() +
+  geom_line(aes(year, mean_expense, colour = practice)) + 
+  facet_wrap(~fertilizer) +
+  theme(legend.position="bottom") +
+  ylab("Expense/Acre")
 
-The profit and losses from livestock on the Thompson farms are not included in the data. It is suggested that Thompson fertilized his fields using manure from his livestock, and subsequently has an expense due to spreading manure, but no expenses for purchasing fertilizer. The Boone expenses on the other hand include a large sum (relative to other expenses) for purchasing fertilizer. As livestock costs and profits are not included, it seems reasonable to explore excluding these variables from the analysis. Note: this analysis was done without additional income from straw, stubble, and residue.
-
-#### Expenses
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
-theme_set(theme_bw(base_size=12))
-p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses by Farm") + theme(legend.position="bottom")
-p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer by Farm") + theme(legend.position="bottom")
-grid.arrange(p1,p2,ncol=2)
 ```
 
-#### Profit 
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
-p5<-qplot(data=df, x=year, y=rawprofit, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit") + theme(legend.position="bottom")
-p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Fertilizer") + theme(legend.position="bottom")
-grid.arrange(p5,p6,ncol=2)
+```{r, fig.cap="Profit"}
+df %>%
+  gather(fertilizer, rawprofit, rawprofit, rawprofit_nofert) %>% 
+  mutate(fertilizer = ifelse(fertilizer == "rawprofit", "With fertilizer", "W/o fertilizer")) %>%
+  ggplot() +
+  geom_line(aes(year, rawprofit, colour = practice)) + 
+  facet_wrap(~fertilizer) +
+  theme(legend.position="bottom") +
+  ylab("Profit/Acre")
 ```
 
 Removal of fertilizer affects seems to lessen the difference in expenses and profit between the Boone and Thompson averages, but the Thompson farm still consistently comes out ahead. 
 
-#### With/Without Fertilizer Costs -- Just Corn vs SB
-
-```{r, fig.pos='h', fig.width=8, fig.height=8, fig.align='center',echo=FALSE}
-p3<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses") + facet_wrap(~crop) + theme(legend.position="bottom")
-p4<-qplot(data=subset(expenses, crop=="Corn" | crop=="SB"), x=year, y=expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Fertilizer") + facet_wrap(~crop) + theme(legend.position="bottom")
-grid.arrange(p3,p4,ncol=1)
+```{r, fig.cap="With/Without Fertilizer Costs -- Just Corn vs SB"}
+expenses %>%
+  filter(crop %in% c("Corn", "SB")) %>%
+  gather(fertilizer, expense, expense, expense_nofert) %>% 
+  mutate(fertilizer = ifelse(fertilizer == "expense", "With fertilizer", "W/o fertilizer")) %>%
+  ggplot() +
+  geom_line(aes(year, expense, colour = practice)) + 
+  facet_grid(fertilizer ~ crop) +
+  theme(legend.position="bottom") +
+  ylab("Expense/Acre")
 ```
 
 When just looking at corn, expenses for Boone drop considerably and decrease the gap between farms.
@@ -184,25 +207,41 @@ df$profit_extra <- income2$mean_allincome - df$mean_expense
 df$rawprofit_nofert <- df$mean_income - df$mean_expense_nofert
 ```
 
-### All Additional Income and Expenses
+## Effect of Additional Practices
 The exploratory analysis aboves focuses on crop income, ignoring additional income from straw, stubble, and residue. However, we should also remove costs related with these income sources if we don't include them (Purch\_Pert, Manure\_Charge, Windrow\_Oats, Stubble\_Costs, Straw\_Costs).
 
-#### Expenses
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
-p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses by Farm") + theme(legend.position="bottom")
-p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Additional Practices") + theme(legend.position="bottom")
-grid.arrange(p1,p2,ncol=2)
+```{r, fig.cap="Expenses"}
+# p1<-qplot(data=df, x=year, y=mean_expense, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses by Farm") + theme(legend.position="bottom")
+# p2<-qplot(data=df, x=year, y=mean_expense_nofert, group=practice, colour=practice, geom="line", ylab="Expense/Acre", xlab="Year", main="Average Expenses w/o Additional Practices") + theme(legend.position="bottom")
+# grid.arrange(p1,p2,ncol=2)
+
+df %>%
+  gather(fertilizer, mean_expense, mean_expense, mean_expense_nofert) %>% 
+  mutate(fertilizer = ifelse(fertilizer == "mean_expense", "With fertilizer", "W/o fertilizer")) %>%
+  ggplot() +
+  geom_line(aes(year, mean_expense, colour = practice)) + 
+  facet_wrap(~fertilizer) +
+  theme(legend.position="bottom") +
+  ylab("Expense/Acre")
 ```
 
-#### Profit
-```{r, fig.pos='h', fig.width=9, fig.align='center',echo=FALSE}
+```{r, fig.cap="Profit"}
 
-p5<-qplot(data=df, x=year, y=profit_extra, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit") + theme(legend.position="bottom")
-p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Additional Practices") + theme(legend.position="bottom")
-grid.arrange(p5,p6,ncol=2)
+# p5<-qplot(data=df, x=year, y=profit_extra, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit") + theme(legend.position="bottom")
+# p6<-qplot(data=df, x=year, y=rawprofit_nofert, group=practice, colour=practice, geom="line", ylab="Profit/Acre", xlab="Year", main="Average Profit w/o Additional Practices") + theme(legend.position="bottom")
+# grid.arrange(p5,p6,ncol=2)
+
+df %>%
+  gather(fertilizer, rawprofit, rawprofit, rawprofit_nofert) %>% 
+  mutate(fertilizer = ifelse(fertilizer == "rawprofit", "With fertilizer", "W/o fertilizer")) %>%
+  ggplot() +
+  geom_line(aes(year, rawprofit, colour = practice)) + 
+  facet_wrap(~fertilizer) +
+  theme(legend.position="bottom") +
+  ylab("Profit/Acre")
 ```
 
-```{r, fig.pos='h', fig.width=6, fig.align='center',echo=FALSE}
+```{r}
 diff_pextra<-subset(df, practice=="Thompson")$profit_extra - subset(df, practice=="Boone")$profit_extra
 diff_pnone<-subset(df, practice=="Thompson")$rawprofit_nofert - subset(df, practice=="Boone")$rawprofit_nofert
 df2<-data.frame(year=rep(unique(df$year),2), diff<-c(diff_pextra, diff_pnone), method=rep(c("Addition Practices", "No Additional Practices"), each=length(diff_pextra)))

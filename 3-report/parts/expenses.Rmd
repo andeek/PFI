@@ -1,6 +1,6 @@
-As an overview of Thompson's expenses, we can look at his fiel average expenses over time compared to the Boone county average expenses that correspond to his neighbor's practices. This comparison is presented in figure \ref{fig:expenses_time} and shows that over the entire `r max(dat$year) - min(dat$year)` year dataset Thompson's neighbor's expenses are always higher.
+As an overview of Thompson's expenses, we can look at his fiel average expenses over time compared to the Boone county average expenses that correspond to his neighbor's practices. This comparison is presented in the left of figure \ref{fig:expenses_time} and shows that over the entire `r max(dat$year) - min(dat$year)` year dataset Thompson's neighbor's expenses are always higher.
 
-```{r, fig.cap="\\label{fig:expenses_time}Thompson's expenses over time compared to Boone county average. Over the entire dataset Thompson's expenses are always higher."}
+```{r, fig.cap="\\label{fig:expenses_time}(Left) Thompson's expenses over time compared to Boone county average. Over the entire dataset Thompson's expenses are always lower (Right) The difference in expenses over time. Thomspson is spending increasingly less than his Boone counterpart."}
 dat %>%
   filter(item_type == "Expense") %>% 
   group_by(year, farmer, field_id) %>%
@@ -8,13 +8,9 @@ dat %>%
   group_by(year, farmer) %>%
   summarise(avg_expense = mean(total_expense)) %>%
   ggplot() +
-  geom_line(aes(x = year, y = avg_expense, colour = farmer))
-```
+  geom_line(aes(x = year, y = avg_expense, colour = farmer)) +
+  theme(legend.position = "bottom") -> plot1
 
-
-Furthermore we look at the differences plotted over time in figure \ref{fig:expenses_diff} and we can see that the Boone farm is spending increasingly more in his expenses over time than Thompson until 2009, with a drop off after.
-
-```{r, fig.cap="\\label{fig:expenses_diff}The difference in expenses over time. Thomspson is spending increasingly more than his Boone counterpart."}
 dat %>%
   filter(item_type == "Expense") %>% 
   group_by(year, farmer, field_id) %>%
@@ -25,8 +21,14 @@ dat %>%
   spread(farmer, avg_expense) %>%
   mutate(`Boone-Thompson` = Boone - Thompson) %>%
   ggplot() +
-  geom_line(aes(x = year, y = `Boone-Thompson`))
+  geom_line(aes(x = year, y = `Boone-Thompson`)) -> plot2
+
+grid.arrange(plot1, plot2, ncol = 2)
 ```
+
+
+Furthermore we look at the differences plotted over time in the right side of figure \ref{fig:expenses_time} and we can see that the Boone farm is spending increasingly more in his expenses over time than Thompson until 2009, with a drop off after.
+
 
 ## Corn and Soy
 
@@ -46,7 +48,8 @@ dat %>%
   mutate(`Boone-Thompson` = Boone - Thompson) %>%
   ggplot() +
   geom_line(aes(x=year,y=`Boone-Thompson`,color=item)) +
-  facet_wrap(~crop)
+  facet_wrap(~crop) +
+  theme(legend.position = "bottom") 
 
 ```
 
@@ -65,7 +68,8 @@ dat %>%
   summarise(total = sum(value)) %>%
   ggplot() +
   geom_line(aes(x=year, y=total,colour=item)) +
-  facet_wrap(~crop)
+  facet_wrap(~crop) +
+  theme(legend.position = "bottom") 
 ```
 
 These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields.  The Nitrogen expenses drop precipitously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitrogen was not applied to the Boone soybean fields. Spring and fall tillage also added approximately $10/acre to the Boone farm. As part of his farming practices, Thompson does not till his land.
@@ -83,7 +87,8 @@ dat%>%
   summarise(avg_total = mean(total)) %>%
   filter(item %in% c("Labor_Return")) %>%
   ggplot() +
-  geom_line(aes(x=year, y=avg_total,color=farmer)) + facet_wrap(~crop)
+  geom_line(aes(x=year, y=avg_total,color=farmer)) + facet_wrap(~crop) +
+  theme(legend.position = "bottom") 
 ```
 
 The data seems to show Thompson getting a greater labor return than Boone for both corn and soybeans.  However, without additional information about how labor returned is measured, and what assumptions are made in the calculation, it is difficult to say why or how much better Thompson is doing in terms of labor efficiency.  

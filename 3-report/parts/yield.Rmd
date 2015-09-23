@@ -49,12 +49,13 @@ county_dat %>%
   gather(source, value, Thompson, Boone) %>% 
   ggplot() +
   geom_line(aes(x = year, y = value, colour = source)) +
-  facet_wrap(~crop, scale = "free_y")
+  facet_wrap(~crop, scale = "free_y") +
+  theme(legend.position = "bottom") 
 
 
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, results='asis'}
 ###t-tests
 county_dat %>%
   group_by(crop) %>%
@@ -63,8 +64,10 @@ county_dat %>%
             `Lower 95% CI` = t.test(Thompson, Boone, paired  = TRUE)$conf.int[1],
             `Upper 95% CI` = t.test(Thompson, Boone, paired  = TRUE)$conf.int[2],
             `p value` = t.test(Thompson, Boone, paired  = TRUE)$p.value) -> t_tests
+
 t_tests %>%  
-  kable(digits = 4, caption = "\\label{tab:t_tests}Paired t-tests performed for each of the four crops comparing Thompson to the Boone county average yield in that year. Thompson's yield is significantly higher for all four crops.")
+  xtable(digits = 4, caption = "Paired t-tests performed for each of the four crops comparing Thompson to the Boone county average yield in that year. Thompson's yield is significantly higher for all four crops.", label = "tab:t_tests") %>%
+  print(comment = FALSE, include.rownames = FALSE, table.placement = "H")
 ```
 
 The t-test statistics for corn, hay, oats, and soybeans respectively are `r  paste(paste(round(t_tests[["T statistic"]], 2)[1:3], collapse = ", "), round(t_tests[["T statistic"]], 2)[4], sep = ", and ")` with corresponding p-values all approximately zero.  This leads to the conclusion that Thompson's yields are all significantly better than the Boone County average.  The average yield differences are as follows.  Overall, corn on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "corn"], 2)` bushels per acre more than the average Boone farm.  Soybeans on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "sb"], 2)` bushels per acre more than the average Boone farm. Hay on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "hay"], 2)` dry tons per acre more than the average Boone farm. Oats on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "oats"], 2)` bushels per acre more than the average Boone farm. 
@@ -73,7 +76,7 @@ The t-test statistics for corn, hay, oats, and soybeans respectively are `r  pas
 
 In this section we will see if the crop rotation used by Thompson has any affect on yield.  Specifically we will look at how crops perform based on the crop planted the previous year. Soybeans and oats are always preceded by corn according to Thompson's rotation system. However, corn is preceded by either hay, oats, or soybeans, and hay is preceded by either hay or oats. The boxplots below illustrate how the yield for corn and hay vary based on the crop that was planted on the same field during the previous year.
 
-```{r message=FALSE, echo=FALSE, fig.height=4, fig.cap="\\label{fig:prev_yield}Yields for corn and hay based on the previous crop planted in the field. The yield for corn when hay was planted during the year before is slightly higher than when when soybeans or oats were planted during the year before. The yield of hay is slightly higher when the previous crop was oats, as opposed to hay."}
+```{r message=FALSE, echo=FALSE, fig.cap="\\label{fig:prev_yield}Yields for corn and hay based on the previous crop planted in the field. The yield for corn when hay was planted during the year before is slightly higher than when when soybeans or oats were planted during the year before. The yield of hay is slightly higher when the previous crop was oats, as opposed to hay."}
 yields %>%
   filter(crop %in% c("Corn", "Hay") & !is.na(prev_crop)) %>% 
   ggplot() +
@@ -102,7 +105,7 @@ A future study could further examine these variations by looking at how the yiel
 
 After examining how each individual expense related to the yield of each crop, we found three interesting relationships having to do with corn, shown in figure \ref{fig:expense_yield}.
 
-```{r echo=FALSE, fig.height=4, fig.cap="\\label{fig:expense_yield}Individual expense related to the yield of each corn."}
+```{r echo=FALSE, fig.cap="\\label{fig:expense_yield}Individual expense related to the yield of each corn."}
 yields %>%
   select(crop, Spring_Tillage, Rotary_Hoe, Maunure_Charge, yield) %>%
   gather(item, expense, -crop, -yield) %>%
