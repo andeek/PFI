@@ -28,99 +28,62 @@ yields <- yields[,c(2,1,3,36:38,4:35)]
 
 ## Thompson Yield vs County Average
 
-The first thing to look at is if the yield Thompson is achieving is significantly better than crop yield in the same area.  To do this, we will compare Thompson's crop yields to the crop yield in Boone County.  This data was obtained from the USDA website.  Line charts show the comparison of Thompson's yield to the county average over time.  It appears that Thompson's yield is higher than that of the county average.  To ensure that this is the case a paired t-test was performed for each of the four crops.
+The first thing to look at is if the yield Thompson is achieving is significantly better than crop yield in the same area.  To do this, we will compare Thompson's crop yields to the crop yield in Boone County, as seen in figure \ref{fig:county_compare}.  This data was obtained from the USDA QuickStats website [@usda].  Line charts show the comparison of Thompson's yield to the county average over time.  It appears that Thompson's yield is higher than that of the county average.  To ensure that this is the case a paired t-test was performed for each of the four crops, the results of which are available in table \ref{tab:t_tests}.
 
-```{r echo=FALSE}
-crops <- dat 
-yieldperacres<-subset(crops,item=="Yield_Per_Acre_Bu_per_pound")
-thompsonYield<-subset(yieldperacres,farmer=="Thompson")
+```{r echo=FALSE, fig.cap="\\label{fig:county_compare}The comparison of Thompson's yield to the county average over time.  It appears that Thompson's yield is higher than that of the county average."}
+dat %>%
+  filter(item == "Yield_Per_Acre_Bu_per_pound" & farmer == "Thompson") %>%
+  mutate(crop = tolower(crop)) %>%
+  mutate(value = ifelse(crop == "hay", value/2000, value)) %>%
+  group_by(year, crop) %>%
+  summarise(Thompson = mean(value)) %>% 
+  left_join(countyYield %>%
+              select(Period, Commodity, Year, Value) %>%
+              filter(Period == "YEAR") %>% 
+              mutate(Commodity = tolower(Commodity)) %>%
+              mutate(Commodity = ifelse(Commodity == "soybeans", "sb", Commodity)) %>%
+              rename(Boone = Value),
+            by = c("crop" = "Commodity", "year" = "Year")) -> county_dat
 
-ThompsonAve<-ddply(thompsonYield,.(year,crop),transform,averageYield=ave(value))
-cornThompson<-subset(ThompsonAve,crop=="Corn")
-
-countyYield<-subset(countyYield,Period=="YEAR")
-
-cornCounty<-subset(countyYield,Commodity=="CORN")
-sbCounty<-subset(countyYield,Commodity=="SOYBEANS")
-hayCounty<-subset(countyYield,Commodity=="HAY")
-oatCounty<-subset(countyYield,Commodity=="OATS")
-
-
-plot(cornThompson$year,cornThompson$averageYield,type="l",main="Thompson Yield vs Boone Average-Corn",ylab="Yield",xlab="Year")
-lines(cornCounty$Year,cornCounty$Value,col="red")
-legend(2005,120,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
-
-
-soyThompson<-subset(ThompsonAve,crop=="SB")
-plot(soyThompson$year,soyThompson$averageYield,type="l",main="Thompson Yield vs Boone Average-Soybeans",ylim=c(20,70),ylab="Yield",xlab="Year")
-lines(sbCounty$Year,sbCounty$Value,col="red")
-legend(2005,35,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
-
-hayThompson<-subset(ThompsonAve,crop=="Hay")
-hayThompson$averageYield<-hayThompson$averageYield/2000
-plot(hayThompson$year,hayThompson$averageYield,type="l",col="black",ylim=c(0,9),main="Thompson Yield vs Boone Average-Hay",ylab="Yield",xlab="Year")
-lines(hayCounty$Year,hayCounty$Value,col="red")
-legend(2005,2.5,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
-
-
-oatsThompson<-subset(ThompsonAve,crop=="Oats")
-plot(oatsThompson$year,oatsThompson$averageYield,type="l",,ylim=c(30,150),main="Thompson Yield vs Boone Average-Oats",ylab="Yield",xlab="Year")
-lines(oatCounty$Year,oatCounty$Value,col="red")
-legend(2005,60,c("Thompson","Boone County"), lty=c(1,1), lwd=c(2.5,2.5),col=c("black","red"))
+county_dat %>% 
+  gather(source, value, Thompson, Boone) %>% 
+  ggplot() +
+  geom_line(aes(x = year, y = value, colour = source)) +
+  facet_wrap(~crop, scale = "free_y")
 
 
 ```
 
 ```{r echo=FALSE}
 ###t-tests
-
-
-ttestCorn<-merge(cornThompson,cornCounty,by.x="year",by.y="Year")
-cornT<-t.test(x=ttestCorn$value,y=ttestCorn$Value,paired=T)
-#print(mean(ttestCorn$value-ttestCorn$Value))
-#print(paste("The paired t-test for corn gives a t-value of: ", round(as.numeric(cornT$statistic),3) ,  "and a p-value of: ", round(cornT$p.value,7),sep=" "))
-
-ttestsb<-merge(soyThompson,sbCounty,by.x="year",by.y="Year")
-sbT<-t.test(x=ttestsb$value,y=ttestsb$Value,paired=T)
-#print(mean(ttestsb$value-ttestsb$Value))
-#print(paste("The paired t-test for soybeans gives a t-value of: ", round(as.numeric(sbT$statistic),3) ,  "and a p-value of: ", round(sbT$p.value,9),sep=" "))
-
-ttestHay<-merge(hayThompson,hayCounty,by.x="year",by.y="Year")
-hayT<-t.test(x=ttestHay$value,y=ttestHay$Value,paired=T)
-#print(mean(hayThompson$averageYield-hayCounty$Value))
-#print(paste("The paired t-test for hay gives a t-value of: ", round(as.numeric(hayT$statistic),3) ,  "and a p-value of: ", round(hayT$p.value,9),sep=" "))
-
-ttestOats<-merge(oatsThompson,oatCounty,by.x="year",by.y="Year")
-oatsT<-t.test(x=ttestOats$value,y=ttestOats$Value,paired=T)
-#print(mean(ttestOats$value-ttestOats$Value))
-#print(paste("The paired t-test for oats gives a t-value of: ", round(as.numeric(oatsT$statistic),3) ,  "and a p-value of: ", round(oatsT$p.value,9),sep=" "))
-
+county_dat %>%
+  group_by(crop) %>%
+  summarise(`Average Difference` = t.test(Thompson, Boone, paired  = TRUE)$estimate,
+            `T statistic` = t.test(Thompson, Boone, paired  = TRUE)$statistic,
+            `Lower 95% CI` = t.test(Thompson, Boone, paired  = TRUE)$conf.int[1],
+            `Upper 95% CI` = t.test(Thompson, Boone, paired  = TRUE)$conf.int[2],
+            `p value` = t.test(Thompson, Boone, paired  = TRUE)$p.value) -> t_tests
+t_tests %>%  
+  kable(digits = 4, caption = "\\label{tab:t_tests}Paired t-tests performed for each of the four crops comparing Thompson to the Boone county average yield in that year. Thompson's yield is significantly higher for all four crops.")
 ```
 
-The t-test statistics for corn, soybeans, hay, and oats respectively are 4.817, 8.729, 19.371, and 5.46 with corresponding p-values all approximately zero.  This leads to the conclusion that Thompson's yields are all significantly better than the Boone County average.  
-
-The average yield differences are as follows.  Corn on Thompson's land produces 12.67 bushels per acre more than the average Boone farm.  Soybeans on Thompson's land produces 10.22 bushels per acre more than the average Boone farm. Hay on Thompson's land produces 2.79  dry tons per acre more than the average Boone farm. Oats on Thompson's land produces 22.91 bushels per acre more than the average Boone farm. 
+The t-test statistics for corn, hay, oats, and soybeans respectively are `r  paste(paste(round(t_tests[["T statistic"]], 2)[1:3], collapse = ", "), round(t_tests[["T statistic"]], 2)[4], sep = ", and ")` with corresponding p-values all approximately zero.  This leads to the conclusion that Thompson's yields are all significantly better than the Boone County average.  The average yield differences are as follows.  Overall, corn on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "corn"], 2)` bushels per acre more than the average Boone farm.  Soybeans on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "sb"], 2)` bushels per acre more than the average Boone farm. Hay on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "hay"], 2)` dry tons per acre more than the average Boone farm. Oats on Thompson's land produces `r round(t_tests[["Average Difference"]][t_tests$crop == "oats"], 2)` bushels per acre more than the average Boone farm. 
 
 ## Yield by previous crop
 
-In this section we will see if the crop rotation used by Thompson has any affect on yield.  Specifically we will look at how crops preform based on the crop planted the previous year.  Soybeans and oats are always preceded by corn according to Thompson's rotation system. However, corn is preceded by either hay or soybeans, and hay is preceded by either hay or oats. The boxplots below illustrate how the yield for corn and hay vary based on the crop that was planted on the same field during the previous year.
+In this section we will see if the crop rotation used by Thompson has any affect on yield.  Specifically we will look at how crops perform based on the crop planted the previous year. Soybeans and oats are always preceded by corn according to Thompson's rotation system. However, corn is preceded by either hay, oats, or soybeans, and hay is preceded by either hay or oats. The boxplots below illustrate how the yield for corn and hay vary based on the crop that was planted on the same field during the previous year.
 
-```{r echo=FALSE}
-corn <- yields %>% filter(crop == "Corn", prev_crop != "Oats") %>%
-  select(-3)
-hay <- yields %>% filter(crop == "Hay") %>%
-  select(-3)
+```{r message=FALSE, echo=FALSE, fig.height=4, fig.cap="\\label{fig:prev_yield}Yields for corn and hay based on the previous crop planted in the field. The yield for corn when hay was planted during the year before is slightly higher than when when soybeans or oats were planted during the year before. The yield of hay is slightly higher when the previous crop was oats, as opposed to hay."}
+yields %>%
+  filter(crop %in% c("Corn", "Hay") & !is.na(prev_crop)) %>% 
+  ggplot() +
+  geom_boxplot(aes(prev_crop, yield)) +
+  facet_wrap(~crop, scale = "free") +
+  xlab("Previous Crop")
+
 ```
 
-```{r message=FALSE, echo=FALSE, fig.height=4}
-plot1 <- qplot(prev_crop, yield, data=filter(corn, !is.na(prev_crop))) +
-  ggtitle("Corn") + geom_boxplot() + xlab("Previous Crop")
-plot2 <- qplot(prev_crop, yield, data=filter(hay, !is.na(prev_crop))) + 
-  ggtitle("Hay") + geom_boxplot() + xlab("Previous Crop")
-grid.arrange(plot1, plot2, ncol=2)
-```
-
-The plots show that the yield for corn when hay was planted during the year before is slightly higher than when when soybeans were planted during the year before. The yield of hay is also slightly higher when the previous crop was oats, as opposed to hay. To determine if these differences are statistically signficant, we used a two-sample t-test for the yields of each crop based on the preceding crop. The resulting p-value for the yield of corn was 0.4993, and was 0.7785 for hay. Thus, there is not significant evidence that planting hay or soybeans before corn has any difference on the yield of corn. Similarly, there is no evidence that planting hay or oats before hay has any difference on the yield of hay.
+Figure \ref{fig:prev_yield} show that the yield for corn when hay was planted during the year before is slightly higher than when when soybeans were planted during the year before. The yield of hay is also slightly higher when the previous crop was oats, as opposed to hay. To determine if these differences are statistically signficant, we used a two-sample t-test for the yields of each crop based on the preceding crop. The resulting p-value for the yield of corn was 0.4993, and was 0.7785 for hay. Thus, there is not significant evidence that planting hay or soybeans before corn has any difference on the yield of corn. Similarly, there is no evidence that planting hay or oats before hay has any difference on the yield of hay.
 
 ```{r, echo=FALSE}
 # Is there a statistically significant difference in the yields for corn and hay based
@@ -137,29 +100,22 @@ A future study could further examine these variations by looking at how the yiel
 
 ## Yield by expense
 
-After examining how each individual expense related to the yield of each crop, we found three interesting relationships having to do with corn.
+After examining how each individual expense related to the yield of each crop, we found three interesting relationships having to do with corn, shown in figure \ref{fig:expense_yield}.
 
-```{r echo=FALSE, fig.width=6, fig.height=4}
-yields %>% filter(crop == "Corn", Spring_Tillage > 0) %>%
-  ggplot(aes(Spring_Tillage, yield)) + geom_point() + geom_smooth(method="lm")
+```{r echo=FALSE, fig.height=4, fig.cap="\\label{fig:expense_yield}Individual expense related to the yield of each corn."}
+yields %>%
+  select(crop, Spring_Tillage, Rotary_Hoe, Maunure_Charge, yield) %>%
+  gather(item, expense, -crop, -yield) %>%
+  filter(expense > 0 & crop == "Corn") -> plot_dat
+
+plot_dat %>%
+  ggplot(aes(expense, yield)) +
+  geom_point() +
+  geom_smooth(data = subset(plot_dat, item %in% c("Spring_Tillage", "Rotary_Hoe")), method = "lm", formula = y ~ x, size = 1) + 
+  geom_smooth(data = subset(plot_dat, item == "Maunure_Charge"), method = "lm", formula = y ~ x + I(x^2), size = 1) +
+  facet_wrap(~item, scale = "free_x")
 ```
 
-Corn and ```Spring_Tillage``` have a moderately strong positive relationship. As the money spent on tilling in the spring increases, the yield of corn generally increases. The plot below illustrates this relationship after removing all the years when no money was spent on spring tillage.
+Corn and `Spring_Tillage` have a moderately positive relationship. As the money spent on tilling in the spring increases, the yield of corn generally increases. Figure \ref{fig:expense_yield} illustrates this relationship after removing all the years when no money was spent on spring tillage. Additionally, figure \ref{fig:expense_yield} shows the expenses of `Rotary_Hoe` against the yield of corn with a linear trend fitted to the data. The trend suggests that the more money spent on `Rotary_Hoe`, the higher the expected yield will be. Finally, the amount spent on maunure exhibits a concave-down, quadratic relationship with the yield of corn. The expected yield increases as the expense on maunure increases up to a point, after which the expected yield actually decreases.
 
-```{r echo=FALSE, fig.width=6, fig.height=4}
-yields %>% filter(crop == "Corn") %>%
-  ggplot(aes(Rotary_Hoe, yield)) + geom_point() + 
-  stat_smooth(method = "lm", formula = y ~ x, size = 1)
-```
-
-The plot above shows the expenses of ```Rotary_Hoe``` against the yield of corn with a linear trend fitted to the data. The trend suggests that the more money spent on ```Rotary_Hoe```, the higher the expected yield will be.
-
-```{r echo=FALSE, fig.width=6, fig.height=4}
-yields %>% filter(crop == "Corn") %>%
-  ggplot(aes(Maunure_Charge, yield)) + geom_point() + 
-  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1)
-```
-
-The amount spent on maunure exhibits a concave-down, quadratic relationship with the yield of corn. The expected yield increases as the expense on maunure increases up to a point, after which the expected yield actually decreases.
-
-In conclusion, some possible reasons for why Thompson attained better yields than the county averages are his usage of Spring tillage, the rotary hoe, and maunure. However, it is important to note that this information comes only from Thompson's land and cannot be generalized to any other farm. Also these graphs do not take into account year-to-year variability due to rainfall, temperature, and other influences.
+In conclusion, some possible reasons for why Thompson attained better yields than the county averages are his usage of Spring tillage, the rotary hoe, and manure. However, it is important to note that this information comes only from Thompson's land and cannot be generalized to any other farm. Also these conclusions do not take into account year-to-year variability due to rainfall, temperature, and other influences.

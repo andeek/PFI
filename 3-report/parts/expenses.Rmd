@@ -11,6 +11,7 @@ dat %>%
   geom_line(aes(x = year, y = avg_expense, colour = farmer))
 ```
 
+
 Furthermore we look at the differences plotted over time in figure \ref{fig:expenses_diff} and we can see that the Boone farm is spending increasingly more in his expenses over time than Thompson until 2009, with a drop off after.
 
 ```{r, fig.cap="\\label{fig:expenses_diff}The difference in expenses over time. Thomspson is spending increasingly more than his Boone counterpart."}
@@ -27,9 +28,11 @@ dat %>%
   geom_line(aes(x = year, y = `Boone-Thompson`))
 ```
 
+## Corn and Soy
+
 Although the Thompson farm employed a five crop rotation, our further analysis focuses on corn and soybeans since the Boone farm data only includes information on those two crops.  After averaging expenses by year, and over the number of fields, we plot the difference in expenses between the two farms (by crop) in figure \ref{fig:diff_corn_soy} after selecting differences that are substantively different from zero.  
 
-```{r ,warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "\\label{fig:diff_corn}Difference (Boone - Thompson) in average expenses for corn over time. For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide. "}
+```{r ,warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "\\label{fig:diff_corn_soy}Difference (Boone - Thompson) in average expenses for corn over time. For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide. "}
 dat %>% 
   filter(item_type == "Expense") %>%
   filter(crop %in% c("Corn", "SB")) %>%
@@ -47,9 +50,7 @@ dat %>%
 
 ```
 
-For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide.  The Boone farm consistently pays more per acre for those inputs.  In addition, starting at around 1994 the difference between Thompson and Boon increases sharply, peaking in 2009.  In 2009, Boone payed approximately $180/acre more for corn fertilizer and $110/acre more for soybean fertilizer.  
-
-The second biggest cost difference is for herbicide.  This expense is stable, hovering around $25/acre more for Boone compared to Thompson.  These differences are likely due to Thompson's farming practices.
+For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide.  The Boone farm consistently pays more per acre for those inputs.  In addition, starting at around 1994 the difference between Thompson and Boon increases sharply, peaking in 2009.  In 2009, Boone payed approximately $180/acre more for corn fertilizer and $110/acre more for soybean fertilizer. The second biggest cost difference is for herbicide.  This expense is stable, hovering around $25/acre more for Boone compared to Thompson.  These differences are likely due to Thompson's farming practices.
 
 There are also expenses that only Boone accrues, as seen in figure \ref{fig:boone_only}.
 
@@ -67,9 +68,7 @@ dat %>%
   facet_wrap(~crop)
 ```
 
-These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields.  The Nitrogen expenses drop precipitously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitrogen was not applied to the Boone soybean fields.  
-
-Spring and fall tillage also added approximately $10/acre to the Boone farm.  As part of his farming practices, Thompson does not till his land.
+These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields.  The Nitrogen expenses drop precipitously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitrogen was not applied to the Boone soybean fields. Spring and fall tillage also added approximately $10/acre to the Boone farm. As part of his farming practices, Thompson does not till his land.
 
 The last expense to consider is labor.  The data does not contain the number of hours each farmer put into his work.  However, we do have variables on labor return.  According to the Thompson report, labor return is calculated after all out of pocket costs are paid.  The Boone labor return for corn and soybeans is identical and fairly flat.  This is likely due to assumptions that Thompson made about labor hours on the Boone farm when recording the data.  
 
@@ -90,6 +89,7 @@ dat%>%
 The data seems to show Thompson getting a greater labor return than Boone for both corn and soybeans.  However, without additional information about how labor returned is measured, and what assumptions are made in the calculation, it is difficult to say why or how much better Thompson is doing in terms of labor efficiency.  
 
 ## Building crop sequences
+
 Another interesting aspect to the expenses data is in the expenses incurred from sequential planting of crops in rotation. Due to the nature of the data we have available, this exploration will be limited to the Thompson data set only, seeing as the Boone average data does not have rotation of crops.
 
 ```{r, echo=FALSE, fig.cap="Occurence and expenses associated with one year sequential crops limited to the Thompson farm. Corn is most expensive when following hay."}
