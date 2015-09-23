@@ -7,6 +7,7 @@ output:
     includes:
       in_header: extra/preamble.tex
     number_sections: yes
+    fig_caption: true
 bibliography: extra/refs.bib
 ---
 

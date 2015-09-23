@@ -1,122 +1,80 @@
-Although the Thompson farm employed a five crop rotation, our analysis focuses on corn and soybeans since the Boone farm data only includes information on those two crops.  After averaging expenses by year, and over the number of fields, we plot the difference in expenses between the two farms (by crop) after selecting differences that are substantively different from zero.  
+As an overview of Thompson's expenses, we can look at his fiel average expenses over time compared to the Boone county average expenses that correspond to his neighbor's practices. This comparison is presented in figure \ref{fig:expenses_time} and shows that over the entire `r max(dat$year) - min(dat$year)` year dataset Thompson's neighbor's expenses are always higher.
 
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
-dat[complete.cases(dat),] %>% 
+```{r, fig.cap="\\label{fig:expenses_time}Thompson's expenses over time compared to Boone county average. Over the entire dataset Thompson's expenses are always higher."}
+dat %>%
+  filter(item_type == "Expense") %>% 
+  group_by(year, farmer, field_id) %>%
+  summarise(total_expense = sum(value, na.rm = TRUE)) %>%
+  group_by(year, farmer) %>%
+  summarise(avg_expense = mean(total_expense)) %>%
+  ggplot() +
+  geom_line(aes(x = year, y = avg_expense, colour = farmer))
+```
+
+Furthermore we look at the differences plotted over time in figure \ref{fig:expenses_diff} and we can see that the Boone farm is spending increasingly more in his expenses over time than Thompson until 2009, with a drop off after.
+
+```{r, fig.cap="\\label{fig:expenses_diff}The difference in expenses over time. Thomspson is spending increasingly more than his Boone counterpart."}
+dat %>%
+  filter(item_type == "Expense") %>% 
+  group_by(year, farmer, field_id) %>%
+  summarise(total_expense = sum(value, na.rm = TRUE)) %>%
+  group_by(year, farmer) %>%
+  summarise(avg_expense = mean(total_expense)) %>%
+  ungroup() %>%
+  spread(farmer, avg_expense) %>%
+  mutate(`Boone-Thompson` = Boone - Thompson) %>%
+  ggplot() +
+  geom_line(aes(x = year, y = `Boone-Thompson`))
+```
+
+Although the Thompson farm employed a five crop rotation, our further analysis focuses on corn and soybeans since the Boone farm data only includes information on those two crops.  After averaging expenses by year, and over the number of fields, we plot the difference in expenses between the two farms (by crop) in figure \ref{fig:diff_corn_soy} after selecting differences that are substantively different from zero.  
+
+```{r ,warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "\\label{fig:diff_corn}Difference (Boone - Thompson) in average expenses for corn over time. For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide. "}
+dat %>% 
   filter(item_type == "Expense") %>%
-  filter(crop %in% c("Corn")) %>%
+  filter(crop %in% c("Corn", "SB")) %>%
   filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
   group_by(farmer, year, crop, field_id,item) %>%
   summarise(total = sum(value)) %>%
-  group_by(farmer,year,item) %>%
+  group_by(farmer, year, crop, item) %>%
   summarise(avg_total = mean(total)) %>%
   ungroup() %>%
-  spread(farmer,avg_total) %>%
-  mutate(difference = Boone-Thompson) %>%
+  spread(farmer, avg_total) %>%
+  mutate(`Boone-Thompson` = Boone - Thompson) %>%
   ggplot() +
-  geom_line(aes(x=year,y=difference,color=item)) +
-  ggtitle('Difference (Boone-Thompson) in Average Expenses for Corn')
+  geom_line(aes(x=year,y=`Boone-Thompson`,color=item)) +
+  facet_wrap(~crop)
 
 ```
-
-```{r}
-
-dat[complete.cases(dat),] %>% 
-  filter(item_type == "Expense") %>%
-  filter(crop %in% c("SB")) %>%
-  filter(item %in% c("Purch_Pert","Seed","Herbicides","Hedge_per_PL")) %>%
-  group_by(farmer, year, crop, field_id,item) %>%
-  summarise(total = sum(value)) %>%
-  group_by(farmer,year,item) %>%
-  summarise(avg_total = mean(total)) %>%
-  ungroup() %>%
-  spread(farmer,avg_total) %>%
-  mutate(difference = Boone-Thompson) %>%
-  ggplot() +
-  geom_line(aes(x=year,y=difference,color=item)) +
-  ggtitle('Difference (Boone-Thompson) in Average Expenses for SB')
-
-```
-
 
 For both corn and soybeans the biggest cost discrepancy is for fertilizer and herbicide.  The Boone farm consistently pays more per acre for those inputs.  In addition, starting at around 1994 the difference between Thompson and Boon increases sharply, peaking in 2009.  In 2009, Boone payed approximately $180/acre more for corn fertilizer and $110/acre more for soybean fertilizer.  
 
-The second biggest cost difference is for herbicide.  This expense is stable, hovering around $25/acre more for Boone compared to Thompson.  These differences are likely due to Thompson's organic farming practices.
+The second biggest cost difference is for herbicide.  This expense is stable, hovering around $25/acre more for Boone compared to Thompson.  These differences are likely due to Thompson's farming practices.
 
-There are also expenses that only Boone accrues.
+There are also expenses that only Boone accrues, as seen in figure \ref{fig:boone_only}.
 
-
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
-boone_extra_expense_corn <- dat[complete.cases(dat),] %>% 
+```{r,warning=FALSE,message=FALSE,echo=FALSE, fig.cap="\\label{fig:boone_only} Boone extra expenses for corn and soy beans. These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields."}
+dat %>% 
   filter(item_type == "Expense") %>%
+  filter(crop %in% c("Corn", "SB")) %>%
   filter(farmer=="Boone") %>%
-  filter(crop %in% c("Corn")) %>%
   filter(item %in% c("Apply_NH4","Spring_Tillage","Purch_pert","Fall_Tillage")) %>%
   filter(value>.01) %>%
-  group_by(year,item) %>%
+  group_by(year, item, crop) %>%
   summarise(total = sum(value)) %>%
   ggplot() +
-  geom_line(aes(x=year, y=total,linetype=item)) +
-  ggtitle('Boone Extra Expenses for Corn')
-
-boone_extra_expense_corn
-
-```
-
-```{r}
-boone_extra_expense_sb<-dat[complete.cases(dat),] %>% 
-  filter(item_type == "Expense") %>%
-  filter(farmer=="Boone") %>%
-  filter(crop %in% c("SB")) %>%
-  filter(item %in% c("Spring_Tillage","Purch_pert","Fall_Tillage","Apply_NH4")) %>%
-  filter(value>.01) %>%
-  group_by(year,item) %>%
-  summarise(total = sum(value)) %>%
-  ggplot() +
-  geom_line(aes(x=year, y=total,linetype=item)) +
-  ggtitle('Boone Extra Expenses for SB')
-
-boone_extra_expense_sb
+  geom_line(aes(x=year, y=total,colour=item)) +
+  facet_wrap(~crop)
 ```
 
 These extra costs are for tillage (spring and fall), and applying Nitrogen to the corn fields.  The Nitrogen expenses drop precipitously in 1994, and then gradually increase to an extra $12/acre in 2011.  Nitrogen was not applied to the Boone soybean fields.  
 
-Spring and fall tillage also added approximately $10/acre to the Boone farm.  As part of his organic farming, Thompson does not till his land.
-
-Although Thompson has lower expenses than Boone, it could be a moot point if his yield is substantially lower than Boone.  Therefore, we will also compare yields to see if Thompson is able to still produce despite spending less on fertilizer and herbicide.  From looking at time series plots of average yields, it appears that Thompson is able to consistently produce corn and soybeans at an equal or slightly higher level than the Boone farm.    
-
-
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
-corn_yield<-dat[complete.cases(dat),] %>% 
-  filter(item_type == "Unit Quantity") %>%
-  filter(crop %in% c("Corn")) %>%
-  group_by(farmer, year,field_id) %>%
-  summarise(total = sum(value)) %>%
-  group_by(farmer, year) %>%
-  summarise(avg_total = mean(total)) %>%
-  ggplot() +
-  geom_line(aes(x=year, y=avg_total,color=farmer)) +
-  ggtitle('Avg Corn Yields') +
-  theme(legend.position="bottom")
-  
-sb_yield<-dat[complete.cases(dat),] %>% 
-  filter(item_type == "Unit Quantity") %>%
-  filter(crop %in% c("SB")) %>%
-  group_by(farmer, year,field_id) %>%
-  summarise(total = sum(value)) %>%
-  group_by(farmer, year) %>%
-  summarise(avg_total = mean(total)) %>%
-  ggplot() +
-  geom_line(aes(x=year, y=avg_total,color=farmer)) +
-  ggtitle('Avg SB Yields') +
-  theme(legend.position="bottom")
-
-grid.arrange(corn_yield,sb_yield, ncol=2)
-```
+Spring and fall tillage also added approximately $10/acre to the Boone farm.  As part of his farming practices, Thompson does not till his land.
 
 The last expense to consider is labor.  The data does not contain the number of hours each farmer put into his work.  However, we do have variables on labor return.  According to the Thompson report, labor return is calculated after all out of pocket costs are paid.  The Boone labor return for corn and soybeans is identical and fairly flat.  This is likely due to assumptions that Thompson made about labor hours on the Boone farm when recording the data.  
 
-```{r,warning=FALSE,message=FALSE,echo=FALSE}
-dat[complete.cases(dat),] %>% 
+```{r,warning=FALSE,message=FALSE,echo=FALSE, fig.cap = "\\label{fig:labor_return}Labor return by crop for each farmer."}
+dat%>% 
   filter(item_type == "Derived") %>%
   filter(crop %in% c("Corn","SB")) %>%
   filter(item %in% c("Labor_Return","LaborandMR_dollar_per_A")) %>%
@@ -126,16 +84,15 @@ dat[complete.cases(dat),] %>%
   summarise(avg_total = mean(total)) %>%
   filter(item %in% c("Labor_Return")) %>%
   ggplot() +
-  geom_line(aes(x=year, y=avg_total,color=crop)) +facet_wrap(~farmer)+
-  ggtitle('Labor Return by Crop')
+  geom_line(aes(x=year, y=avg_total,color=farmer)) + facet_wrap(~crop)
 ```
 
 The data seems to show Thompson getting a greater labor return than Boone for both corn and soybeans.  However, without additional information about how labor returned is measured, and what assumptions are made in the calculation, it is difficult to say why or how much better Thompson is doing in terms of labor efficiency.  
 
 ## Building crop sequences
-We are interested in the expenses incurred from sequential planting of crops in rotation. Due to the nature of the data we have available, this exploration will be limited to the Thompson data set only, seeing as the Boone average data does not have rotation of crops.
+Another interesting aspect to the expenses data is in the expenses incurred from sequential planting of crops in rotation. Due to the nature of the data we have available, this exploration will be limited to the Thompson data set only, seeing as the Boone average data does not have rotation of crops.
 
-```{r, echo=FALSE, fig.width=3.5, fig.height=3.5}
+```{r, echo=FALSE, fig.cap="Occurence and expenses associated with one year sequential crops limited to the Thompson farm. Corn is most expensive when following hay."}
 join_dat <- dat %>% 
   filter(item_type == "Expense") %>%
   filter(farmer == "Thompson") %>%
@@ -157,8 +114,9 @@ seq_dat %>%
   ggplot(aes(x=crop1, y=crop2, z=avg_total)) +
   stat_bin2d() +
   scale_fill_gradient(low="#e5f5e0", high="#31a354") +
-  ggtitle('Occurrence of sequential crops') +
-  theme(legend.position='bottom')
+  theme(legend.position='bottom') +
+  ylab("Occurence by sequential crops") + xlab("") +
+  theme(legend.position='bottom')-> plot1
 
 seq_dat %>% 
   group_by(crop1, crop2) %>%
@@ -166,11 +124,13 @@ seq_dat %>%
   ggplot(aes(x=crop1, y=crop2, z=avg_total)) +
   stat_summary2d() +
   scale_fill_gradient(low="#e5f5e0", high="#31a354") +
-  ggtitle('Expenses by sequential crops') +
-  theme(legend.position='bottom')
+  ylab('Expenses by sequential crops') + xlab("") +
+  theme(legend.position='bottom') -> plot2
+
+grid.arrange(plot1, plot2, nrow = 1)
 ```
 
-Corn is by far the most expensive crop, but it's interesting to note that it was most expensive when following hay and next most when following soy beans. We can investigate whether there are any additional expenses involved with this sequence of crops in the data.
+Corn is by far the most expensive crop, but it's interesting to note that it was most expensive when following hay and next most when following soy beans. 
 
 
 
