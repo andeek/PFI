@@ -8,6 +8,8 @@ output:
       in_header: extra/preamble.tex
     number_sections: yes
     fig_caption: true
+header-includes:
+    - \usepackage{float}
 bibliography: extra/refs.bib
 ---
 
@@ -26,7 +28,7 @@ library(reshape2)
 ```
 
 ```{r options, echo=FALSE, message=FALSE}
-opts_chunk$set(message = FALSE, warning = FALSE, fig.height = 3.5, echo = FALSE)
+opts_chunk$set(message = FALSE, warning = FALSE, fig.height = 3.5, fig.width=8, fig.pos='H', echo = FALSE)
 ggplot2::theme_set(theme_bw(base_family = "serif"))
 ```
 
@@ -63,7 +65,7 @@ countyYield<-read.csv("../data/BooneYields.csv")
 ```{r yield, child='parts/yield.Rmd', eval=TRUE}
 ```
 
-# Income
+# Profit
 ```{r income, child='parts/income.Rmd', eval=TRUE}
 ```
 
