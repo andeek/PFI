@@ -1,1 +1,7 @@
-This is the section for conclusions. Do not compile this, compile the main doc instead.
+The data collected by Dick Thompson suggest that his farm consistently performed higher than his neighbors in both yield and overall profit from 1988 - 2012. Our exploratory analysis aimed to investigate the key factors which lead to Thompson's advantage over his neighbors. Using data obtained from the USDA, we were able to determine that Thompson's yield was significantly higher in all four crops than the Boone county averages. It is unclear if Thompson's consistently higher yields are due to his farming practices, or perhaps having more fertile land than the average Boone farm. 
+
+When it comes to expenses, Thompson's farm had consistently less expenses than his neighbors, with fertilizer and herbicide costs having the largest contribution to the difference. The utilization of Thompson's livestock for fertilizing his land could also play a role in why Thompson's profit margin seems to be so much larger than his neighbor's. In addition, we were able to determine that labor return is a significant contributor to Thompson's advantage, suggesting that he was able to increase his profit margin over his neighbor's by doing much of his work by himself.
+
+
+
+

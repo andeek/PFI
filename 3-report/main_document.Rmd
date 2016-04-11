@@ -69,6 +69,8 @@ countyYield<-read.csv("../data/BooneYields.csv")
 ```{r income, child='parts/income.Rmd', eval=TRUE}
 ```
 
+\newpage
+
 # Conclusions
 ```{r conclusion, child='parts/conclusions.Rmd', eval=TRUE}
 ```

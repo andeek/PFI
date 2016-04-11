@@ -25,10 +25,10 @@ total_income<-ddply(total_income_crop, .(year, practice), summarize,
               mean_income=mean(mean_income))
 ```
 
-An overall look at income leads us directly to the question of profit. Figure \ref{fig:profit_diff} demonstrates the difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. It is clear that Thompson's profit is consistently higher than the Boone farm averages. Accordingly, Thompson's income from corn and soy are higher for every year than the Boone county average, as can been seen in figure \ref{fig:income_crop}. The question of interest is to determine where this profit is coming from. Better practices, better land, labor return, etc.
+An overall look at income leads us directly to the question of profit. Figure \ref{fig:profit_diff} demonstrates the difference in overall profit between the Thompson farm and his neighbor. Profit is calculated as the sum of all income (including labor return) minus expenses. It is clear that Thompson's profit is consistently higher than his neighbors. Accordingly, Thompson's income from corn and soy are higher for every year, as can been seen in figure \ref{fig:income_crop}. The question of interest is to determine where this profit is coming from. Better practices, better land, labor return, etc.
 
 
-```{r, fig.cap="\\label{fig:profit_diff}The difference in overall profit between the Thompson farm and Boone averages. Profit is calculated as the sum of all income (including labor return) minus expenses. The left plot is the overall profit, while the right plot shows the differences between Thompson and the Boone average."}
+```{r, fig.cap="\\label{fig:profit_diff}The difference in overall profit between the Thompson farm and his neighbor. Profit is calculated as the sum of all income (including labor return) minus expenses. The left plot is the overall profit, while the right plot shows the differences between Thompson and his neighbor."}
 p1<-qplot(data=total_income, x=year, y=mean_income, group=practice, colour=practice, geom="line", ylab="Profit", xlab="Year") + theme(legend.position="bottom")
 diff_pextra<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
 p2<-qplot(x=unique(total_income$year), y=diff_pextra, geom="line", ylab="Difference in Profit (Thompson - Boone)", xlab="Year") + geom_hline(aes(yintercept=0)) 
@@ -79,7 +79,7 @@ Figure \ref{fig:LR_prop} shows what proportion of Thompson and Boone total incom
 
 Thompson farms have higher average labor returns in general, but this shows that the labor return appears to account for a higher proportion of income in the Thompson farms than in the Boone farms. Do the work yourself, if you can! 
 
-```{r, fig.cap="\\label{fig:LR_profit}The proportion of profit difference (Thompson - Boone) that is accounted by labor returns. Once again, this is showing labor returns to be a major contributor to Thompson's profit advantage over the Boone County average neighbor.", fig.height = 3, fig.width=9}
+```{r, fig.cap="\\label{fig:LR_profit}The proportion of profit difference (Thompson - Boone) that is accounted by labor returns. Once again, this is showing labor returns to be a major contributor to Thompson's profit advantage over the Boone County neighbor.", fig.height = 3, fig.width=9}
 diff_profit<-subset(total_income, practice=="Thompson")$mean_income - subset(total_income, practice=="Boone")$mean_income
 diff_lr<-subset(lr, practice=="Thompson")$mean_LR - subset(lr, practice=="Boone")$mean_LR
 
@@ -87,7 +87,7 @@ df2<-data.frame(year=unique(total_income$year), diff_profit, diff_lr, prop_lr=di
 qplot(data=df2, x=year, y=prop_lr, geom="line", xlab="Year", ylab="Prop. of Profit Diff.") + ylim(c(0, .5))
 ```
 
-Consistently, between 10-20% of Thompson's profit advantage is due to the the difference in labor return between Boone and Thompson farms. This is seen in figure \ref{fig:LR_profit}, which shows the proportion of profit difference (Thompson - Boone) that is accounted for by labor returns. Once again, this suggests labor returns are a major contributor to Thompson's profit advantage over the Boone County average.
+Consistently, between 10-20% of Thompson's profit advantage is due to the the difference in labor return between Boone and Thompson farms. This is seen in figure \ref{fig:LR_profit}, which shows the proportion of profit difference (Thompson - Boone) that is accounted for by labor returns. Once again, this suggests labor returns are a major contributor to Thompson's profit advantage.
 
 ## Effect of Livestock
 
@@ -152,7 +152,7 @@ df %>%
 
 ```
 
-Figure \ref{fig:fert_exp} shows that removing fertilizer and additional practices (stubble, residue, etc.) lessens the difference in overall expenses between Thompson and Boone practices, but Thompson still maintained consistently less expenses than the Boone average across the years.
+Figure \ref{fig:fert_exp} shows that removing fertilizer and additional practices (stubble, residue, etc.) lessens the difference in overall expenses between Thompson and Boone practices, but Thompson still maintained consistently less expenses than his neighbor across the years.
 
 ```{r, fig.cap="\\label{fig:exp_corn}Expenses for corn and soybeans with and without fertilizer costs."}
 expenses %>%
@@ -164,6 +164,7 @@ expenses %>%
   facet_grid(fertilizer ~ crop) +
   theme(legend.position="bottom") +
   ylab("Expense/Acre")
+
 ```
 
 When we look at the effect of fertilizer on the difference in expenses for just the corn and soybean crops in figure \ref{fig:exp_corn}, we see that the additional expenses attributed to corn are nearly the same for Boone and Thompson between 1995 - 2005. Additionally, figure \ref{fig:prof_corn} shows that the difference in overall profit due to corn between Boone and Thompson is less when we remove the effect of livestock.
@@ -177,6 +178,7 @@ df %>%
   facet_wrap(~fertilizer) +
   theme(legend.position="bottom") +
   ylab("Profit/Acre")
+
 ```
 
-Removal of livestock effects seems to lessen the difference in expenses and profit between the Boone and Thompson averages, but the Thompson farm still consistently comes out ahead. This suggests that while Thompson's utilization of his livestock is not the sole source of his advantage, it plays a role in increasing his profits over the Boone average. 
+Removal of livestock effects seems to lessen the difference in expenses and profit between the Boone and Thompson averages, but the Thompson farm still consistently comes out ahead. This suggests that while Thompson's utilization of his livestock is not the sole source of his advantage, it plays a role in increasing his profits over the Boone neighbors. 
